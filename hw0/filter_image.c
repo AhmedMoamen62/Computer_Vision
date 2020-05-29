@@ -9,18 +9,40 @@
 void l1_normalize(image im)
 {
     // TODO
+    float weight = 1.0/(im.w*im.h);
+    for(int row = 0 ; row < im.h ; row++)
+    {
+        for(int col = 0; col < im.w ; col++)
+        {
+            for(int ch = 0 ; ch < im.c ; ch++)
+            {
+                set_pixel(im,col,row,ch,weight);
+            }
+        }
+    }
 }
 
 image make_box_filter(int w)
 {
     // TODO
-    return make_image(1,1,1);
+    image img = make_image(w,w,1);
+    float weight = 1.0/(w*w);
+    for(int row = 0 ; row < img.h ; row++)
+    {
+        for(int col = 0; col < img.w ; col++)
+        {
+            set_pixel(img,col,row,0,weight);
+        }
+    }
+    return img;
 }
 
 image convolve_image(image im, image filter, int preserve)
 {
     // TODO
-    return make_image(1,1,1);
+    image img =  make_image(1,1,1);
+
+    return img;
 }
 
 image make_highpass_filter()

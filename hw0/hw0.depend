@@ -132,7 +132,7 @@
 
 1588793389 /media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/args.h
 
-1588793389 source:/media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/filter_image.c
+1590712669 source:/media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/filter_image.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
@@ -140,12 +140,15 @@
 	<assert.h>
 	"image.h"
 
-1588794138 /media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/image.h
+1589903903 /media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/image.h
 
-1588794193 source:/media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/image_math.c
+1590669485 source:/media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/image_math.c
 	"image_math.h"
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
 
-1588794142 /media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/image_math.h
+1589903333 /media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/image_math.h
 
 1588793389 source:/media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/load_image.c
 	<stdio.h>
@@ -178,9 +181,10 @@
 	<math.h>
 	<assert.h>
 
-1589818474 source:/media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/main.c
+1590713828 source:/media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/main.c
 	<stdio.h>
 	<stdlib.h>
+	<math.h>
 	"image.h"
 	"args.h"
 
@@ -192,7 +196,8 @@
 	"image.h"
 	"image_math.h"
 
-1589818549 source:/media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/resize_image.c
+1590714288 source:/media/ahmedmoamen/01D61DA8A11BE740/courses/The Ancient secrets of computer vision/vision-hw0-master/The-Ancient-secrets-of-computer-vision-homework/hw0/resize_image.c
 	<math.h>
 	"image.h"
+	"image_math.h"
 
