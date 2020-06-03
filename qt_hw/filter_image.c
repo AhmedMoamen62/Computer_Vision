@@ -51,7 +51,7 @@ image convolve_image(image im, image filter, int preserve)
             {
                 for(int ch = 0 ; ch < img.c ; ch++)
                 {
-                    set_pixel(img,col,row,ch,weight);
+                    //set_pixel(img,col,row,ch,weight);
                 }
             }
         }
