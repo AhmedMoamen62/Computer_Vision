@@ -93,6 +93,22 @@ image rgb_to_grayscale(image im)
     return gray;
 }
 
+image average_image(image im)
+{
+    assert(im.c == 3);
+    image average = make_image(im.w, im.h, 1);
+    // TODO Fill this in
+    for(int row = 0 ; row < average.h ; row++)
+    {
+        for(int col = 0; col < average.w ; col++)
+        {
+            float pixel_value = get_pixel(im,col,row,0) + get_pixel(im,col,row,1) + get_pixel(im,col,row,2);
+            set_pixel(average,col,row,0,pixel_value/3.0);
+        }
+    }
+    return average;
+}
+
 void shift_image(image im, int c, float v)
 {
     // TODO Fill this in

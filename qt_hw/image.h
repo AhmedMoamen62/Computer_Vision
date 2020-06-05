@@ -12,6 +12,7 @@ float get_pixel(image im, int x, int y, int c);
 void set_pixel(image im, int x, int y, int c, float v);
 image copy_image(image im);
 image rgb_to_grayscale(image im);
+image average_image(image im);
 image grayscale_to_rgb(image im, float r, float g, float b);
 void rgb_to_hsv(image im);
 void hsv_to_rgb(image im);
@@ -40,6 +41,8 @@ image bilinear_resize(image im, int w, int h);
 
 // Filtering
 image convolve_image(image im, image filter, int preserve);
+float convolve_1_in_1(int start_row_kernel,int start_col_kernel, int end_row,int end_col, int start_row_img, int start_col_img ,int ch_img,int ch_kernel, image img, image kernel);
+image calculate_avg(image img,image im,image filter,int mode);
 image make_box_filter(int w);
 image make_highpass_filter();
 image make_sharpen_filter();
