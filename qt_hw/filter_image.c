@@ -93,37 +93,26 @@ image calculate_avg(image img,image im,image filter,int mode)
             int start_col_img = col - filter.w/2;
             for(int ch = 0 ; ch < img.c ; ch++)
             {
+                float pixel_value;
                 if(mode == 0)
                 {
-                    float pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,0,im,filter);
-                    if(pixel_value < 0)
-                    {
-                        set_pixel(img,col,row,ch,0);
-                    }
-                    else if (pixel_value > 1)
-                    {
-                        set_pixel(img,col,row,ch,1);
-                    }
-                    else
-                    {
-                        set_pixel(img,col,row,ch,pixel_value);
-                    }
+                    pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,0,im,filter);
                 }
                 else
                 {
-                    float pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,ch,im,filter);
-                    if(pixel_value < 0)
-                    {
-                        set_pixel(img,col,row,ch,0);
-                    }
-                    else if (pixel_value > 1)
-                    {
-                        set_pixel(img,col,row,ch,1);
-                    }
-                    else
-                    {
-                        set_pixel(img,col,row,ch,pixel_value);
-                    }
+                    pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,ch,im,filter);
+                }
+                if(pixel_value < 0)
+                {
+                    set_pixel(img,col,row,ch,0);
+                }
+                else if (pixel_value > 1)
+                {
+                    set_pixel(img,col,row,ch,1);
+                }
+                else
+                {
+                    set_pixel(img,col,row,ch,pixel_value);
                 }
             }
             //            float red = get_pixel(img,col,row,0);
@@ -138,14 +127,29 @@ image calculate_avg(image img,image im,image filter,int mode)
 void l1_normalize(image im)
 {
     // TODO
-    float weight = 1.0/(im.w*im.h);
+    float sum = 0;
     for(int row = 0 ; row < im.h ; row++)
     {
         for(int col = 0; col < im.w ; col++)
         {
             for(int ch = 0 ; ch < im.c ; ch++)
             {
-                set_pixel(im,col,row,ch,weight);
+                sum += get_pixel(im,col,row,ch);
+            }
+        }
+    }
+    if(sum != 1)
+    {
+        float weight = -(sum - 1)/(im.h*im.w);
+        for(int row = 0 ; row < im.h ; row++)
+        {
+            for(int col = 0; col < im.w ; col++)
+            {
+                for(int ch = 0 ; ch < im.c ; ch++)
+                {
+                    float pixel_value = get_pixel(im,col,row,ch) + weight;
+                    set_pixel(im,col,row,ch,pixel_value);
+                }
             }
         }
     }
@@ -195,13 +199,13 @@ image make_highpass_filter()
     // TODO
     image img = make_image(3,3,1);
 
-    float weight = 3;
+    //float weight = 3;
 
-    set_pixel(img,1,0,0,-1*weight);
-    set_pixel(img,0,1,0,-1*weight);
-    set_pixel(img,2,1,0,-1*weight);
-    set_pixel(img,1,2,0,-1*weight);
-    set_pixel(img,1,1,0,4*weight);
+    set_pixel(img,1,0,0,-1);//*weight);
+    set_pixel(img,0,1,0,-1);//*weight);
+    set_pixel(img,2,1,0,-1);//*weight);
+    set_pixel(img,1,2,0,-1);//*weight);
+    set_pixel(img,1,1,0,4);//*weight);
 
     return img;
 }
@@ -238,7 +242,7 @@ image make_emboss_filter()
 }
 
 // Question 2.2.1: Which of these filters should we use preserve when we run our convolution and which ones should we not? Why?
-// Answer: sharpen and emboss
+// Answer: sharpen and emboss, to keep the colored image
 
 // Question 2.2.2: Do we have to do any post-processing for the above filters? Which ones and why?
 // Answer: TODO
@@ -246,31 +250,92 @@ image make_emboss_filter()
 image make_gaussian_filter(float sigma)
 {
     // TODO
-    return make_image(1,1,1);
+    int sigma_size = sigma*6;
+    int gaussian_size = sigma_size/2 % 2 == 1 ? sigma_size/2 : sigma_size/2 + 1;
+
+    float sigma_square = pow(sigma,2);
+    float outter_coefficient = (1/(TWOPI*sigma_square));
+    float inner_coefficient = -(1/(2*sigma_square));
+
+    image img = make_image(gaussian_size,gaussian_size,1);
+
+    for(int row = 0 ; row < img.h ; row++)
+    {
+        float row_square = pow(row,2);
+        for(int col = 0; col < img.w ; col++)
+        {
+            float pixel_value = outter_coefficient*exp(inner_coefficient*(row_square + pow(col,2)));
+            set_pixel(img,col,row,0,pixel_value);
+        }
+    }
+    l1_normalize(img);
+    return img;
 }
 
 image add_image(image a, image b)
 {
     // TODO
-    return make_image(1,1,1);
+    assert(a.c == b.c && a.h == b.h && a.w == b.w);
+    image img = make_image(a.w,a.h,a.c);
+    for(int row = 0; row < a.h ; row++)
+    {
+        for(int col = 0; col < a.w ; col++)
+        {
+            for(int ch = 0;  ch < a.c ; ch++)
+            {
+                set_pixel(img,col,row,ch,get_pixel(a,col,row,ch) + get_pixel(b,col,row,ch));
+            }
+        }
+    }
+    return img;
 }
 
 image sub_image(image a, image b)
 {
     // TODO
-    return make_image(1,1,1);
+    assert(a.c == b.c && a.h == b.h && a.w == b.w);
+    image img = make_image(a.w,a.h,a.c);
+    for(int row = 0; row < a.h ; row++)
+    {
+        for(int col = 0; col < a.w ; col++)
+        {
+            for(int ch = 0;  ch < a.c ; ch++)
+            {
+                set_pixel(img,col,row,ch,get_pixel(a,col,row,ch) - get_pixel(b,col,row,ch));
+            }
+        }
+    }
+    return img;
 }
 
 image make_gx_filter()
 {
     // TODO
-    return make_image(1,1,1);
+    image img = make_image(3,3,1);
+
+    set_pixel(img,0,0,0,-1);
+    set_pixel(img,0,1,0,-2);
+    set_pixel(img,0,2,0,-1);
+    set_pixel(img,2,0,0,1);
+    set_pixel(img,2,1,0,2);
+    set_pixel(img,2,2,0,1);
+
+    return img;
 }
 
 image make_gy_filter()
 {
     // TODO
-    return make_image(1,1,1);
+    image img = make_image(3,3,1);
+
+    set_pixel(img,0,0,0,-1);
+    set_pixel(img,1,0,0,-2);
+    set_pixel(img,2,0,0,-1);
+    set_pixel(img,0,2,0,1);
+    set_pixel(img,1,2,0,2);
+    set_pixel(img,2,2,0,1);
+
+    return img;
 }
 
 void feature_normalize(image im)
@@ -281,7 +346,9 @@ void feature_normalize(image im)
 image *sobel_image(image im)
 {
     // TODO
-    return calloc(2, sizeof(image));
+    image * img = calloc(2, sizeof(image));
+
+    return img;
 }
 
 image colorize_sobel(image im)
