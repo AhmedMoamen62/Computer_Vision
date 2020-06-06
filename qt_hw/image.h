@@ -41,7 +41,7 @@ image bilinear_resize(image im, int w, int h);
 
 // Filtering
 image convolve_image(image im, image filter, int preserve);
-float convolve_1_in_1(int start_row_kernel,int start_col_kernel, int end_row,int end_col, int start_row_img, int start_col_img ,int ch_img,int ch_kernel, image img, image kernel);
+float convolve_1_in_1(int start_row_img,int start_col_img,int ch_img,int ch_kernel,image img,image kernel);
 image calculate_avg(image img,image im,image filter,int mode);
 image make_box_filter(int w);
 image make_highpass_filter();

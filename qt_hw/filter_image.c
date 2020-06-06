@@ -6,84 +6,96 @@
 #include "image.h"
 #define TWOPI 6.2831853
 
-float convolve_1_in_1(int start_row_kernel,int start_col_kernel, int end_row,int end_col, int start_row_img, int start_col_img ,int ch_img,int ch_kernel, image img, image kernel)
+float convolve_1_in_1(int start_row_img,int start_col_img,int ch_img,int ch_kernel,image img,image kernel)
 {
     float avg = 0;
-    int temp_col_img = start_col_img;
-    int temp_col_kernel = start_col_kernel;
-    for (; start_row_kernel < end_row ; start_row_kernel++,start_row_img++)
+
+    for (int start_row_kernel = 0 ; start_row_kernel < kernel.h/2 ; start_row_kernel++)
     {
-        start_col_img = temp_col_img;
-        start_col_kernel = temp_col_kernel;
-        for (; start_col_kernel < end_col ; start_col_kernel++,start_col_img++)
+        int opposite_row = kernel.h - start_row_kernel - 1;
+
+        for (int start_col_kernel = 0; start_col_kernel < kernel.w/2 ; start_col_kernel++)
         {
-            float kernel_value = get_pixel(kernel,start_col_kernel,start_row_kernel,ch_kernel);
-            float image_value = get_pixel(img,start_col_img,start_row_img,ch_img);
-            avg += kernel_value*image_value;
+            int opposite_col = kernel.w - start_col_kernel - 1;
+
+            float kernel_value_1 = get_pixel(kernel,start_col_kernel,start_row_kernel,ch_kernel);
+            float image_value_1 = get_pixel(img,start_col_img + start_col_kernel,start_row_img + start_row_kernel,ch_img);
+
+            float kernel_value_2 = get_pixel(kernel,opposite_col,start_row_kernel,ch_kernel);
+            float image_value_2 = get_pixel(img,start_col_img + opposite_col,start_row_img + start_row_kernel,ch_img);
+
+            float kernel_value_3 = get_pixel(kernel,start_col_kernel,opposite_row,ch_kernel);
+            float image_value_3 = get_pixel(img,start_col_img + start_col_kernel,start_row_img + opposite_row,ch_img);
+
+            float kernel_value_4 = get_pixel(kernel,opposite_col,opposite_row,ch_kernel);
+            float image_value_4 = get_pixel(img,start_col_img + opposite_col,start_row_img + opposite_row,ch_img);
+
+            avg += kernel_value_1*image_value_1 + kernel_value_2*image_value_2
+                 + kernel_value_3*image_value_3 + kernel_value_4*image_value_4;
         }
+    }
+    if(kernel.h % 2 == 1)
+    {
+        int kernel_center_row = kernel.h/2;
+
+        for (int start_col_kernel = 0; start_col_kernel < kernel.w/2 ; start_col_kernel++)
+        {
+            int opposite_col = kernel.w - start_col_kernel - 1;
+
+            float kernel_value_1 = get_pixel(kernel,kernel_center_row,start_col_kernel,ch_kernel);
+            float image_value_1 = get_pixel(img,start_col_img + kernel_center_row,start_row_img + start_col_kernel,ch_img);
+
+            float kernel_value_2 = get_pixel(kernel,kernel_center_row,opposite_col,ch_kernel);
+            float image_value_2 = get_pixel(img,start_col_img + kernel_center_row,start_row_img + opposite_col,ch_img);
+
+            avg += kernel_value_1*image_value_1 + kernel_value_2*image_value_2;
+        }
+
+    }
+    if(kernel.w % 2 == 1)
+    {
+        int kernel_center_col = kernel.w/2;
+
+        for (int start_row_kernel = 0; start_row_kernel < kernel.h/2 ; start_row_kernel++)
+        {
+            int opposite_row = kernel.h - start_row_kernel - 1;
+
+            float kernel_value_1 = get_pixel(kernel,kernel_center_col,start_row_kernel,ch_kernel);
+            float image_value_1 = get_pixel(img,start_col_img + kernel_center_col,start_row_img + start_row_kernel,ch_img);
+
+            float kernel_value_2 = get_pixel(kernel,kernel_center_col,opposite_row,ch_kernel);
+            float image_value_2 = get_pixel(img,start_col_img + kernel_center_col,start_row_img + opposite_row,ch_img);
+
+            avg += kernel_value_1*image_value_1 + kernel_value_2*image_value_2;
+        }
+    }
+    if(kernel.h % 2 == 1 && kernel.w % 2 == 1)
+    {
+        int kernel_center_row = kernel.h/2;
+        int kernel_center_col = kernel.w/2;
+
+        float kernel_value = get_pixel(kernel,kernel_center_col,kernel_center_row,ch_kernel);
+        float image_value = get_pixel(img,start_col_img + kernel_center_col,start_row_img + kernel_center_row,ch_img);
+
+        avg += kernel_value*image_value;
     }
     return avg;
 }
 
 image calculate_avg(image img,image im,image filter,int mode)
 {
-    int start_row_kernel,start_col_kernel,start_row_img,start_col_img,end_row,end_col;
-    start_row_kernel = 0;
-    start_col_kernel = 0;
-    end_row = filter.h;
-    end_col = filter.w;
 
     for(int row = 0 ; row < img.h ; row++)
     {
-        // To calculate the start, end row of each of the kernel and the original image
-//        if(row < filter.h/2)
-//        {
-//            start_row_kernel = filter.h/2 - row;
-//            end_row = filter.h;
-//            start_row_img = 0;
-//        }
-//        else if(row > im.h - filter.h/2 - 1)
-//        {
-//            start_row_kernel = 0;
-//            end_row =  filter.h % 2 == 1 ? filter.h/2 + im.h - row : filter.h/2 + im.h - row - 1;
-//            start_row_img = row - filter.h/2;
-//        }
-//        else
-//        {
-//            start_row_kernel = 0;
-//            end_row = filter.h;
-//            start_row_img = row - filter.h/2;
-//        }
-        start_row_img = row - filter.h/2;
-
+        int start_row_img = row - filter.h/2;
         for(int col = 0; col < img.w ; col++)
         {
-            // To calculate the start, end col of each of the kernel and the original image
-//            if(col < filter.w/2)
-//            {
-//                start_col_kernel = filter.w/2 - col;
-//                end_col = filter.w;
-//                start_col_img = 0;
-//            }
-//            else if(col > im.w - filter.w/2 - 1)
-//            {
-//                start_col_kernel = 0;
-//                end_col =  filter.w % 2 == 1 ? filter.w/2 + im.w - col : filter.w/2 + im.w - col - 1;
-//                start_col_img = col - filter.w/2;
-//            }
-//            else
-//            {
-//                start_col_kernel = 0;
-//                end_col = filter.w;
-//                start_col_img = col - filter.w/2;
-//            }
-            start_col_img = col - filter.w/2;
-
+            int start_col_img = col - filter.w/2;
             for(int ch = 0 ; ch < img.c ; ch++)
             {
                 if(mode == 0)
                 {
-                    float pixel_value = convolve_1_in_1(start_row_kernel,start_col_kernel,end_row,end_col,start_row_img,start_col_img,ch,0,im,filter);
+                    float pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,0,im,filter);
                     if(pixel_value < 0)
                     {
                         set_pixel(img,col,row,ch,0);
@@ -99,7 +111,7 @@ image calculate_avg(image img,image im,image filter,int mode)
                 }
                 else
                 {
-                    float pixel_value = convolve_1_in_1(start_row_kernel,start_col_kernel,end_row,end_col,start_row_img,start_col_img,ch,ch,im,filter);
+                    float pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,ch,im,filter);
                     if(pixel_value < 0)
                     {
                         set_pixel(img,col,row,ch,0);
@@ -114,10 +126,10 @@ image calculate_avg(image img,image im,image filter,int mode)
                     }
                 }
             }
-//            float red = get_pixel(img,col,row,0);
-//            float green = get_pixel(img,col,row,1);
-//            float blue = get_pixel(img,col,row,2);
-//            printf("x = %d , y = %d , red = %.6f , green = %.6f , blue = %.6f\n",col,row,red,green,blue);
+            //            float red = get_pixel(img,col,row,0);
+            //            float green = get_pixel(img,col,row,1);
+            //            float blue = get_pixel(img,col,row,2);
+            //            printf("x = %d , y = %d , red = %.6f , green = %.6f , blue = %.6f\n",col,row,red,green,blue);
         }
     }
     return img;
@@ -183,7 +195,7 @@ image make_highpass_filter()
     // TODO
     image img = make_image(3,3,1);
 
-    float weight = 1;
+    float weight = 3;
 
     set_pixel(img,1,0,0,-1*weight);
     set_pixel(img,0,1,0,-1*weight);

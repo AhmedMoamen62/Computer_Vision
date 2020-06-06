@@ -8,8 +8,8 @@ int main()
 {
 
     image img = load_image("data/dog.jpg"); //data/dog.jpg
-    image f = make_emboss_filter();
-    image im = convolve_image(img,f,1);
+    image f = make_highpass_filter();
+    image im = convolve_image(img,f,0);
     save_image(im,"editable_dog");
 
 //    for(int row = 390 ; row < 394; row++)
