@@ -42,11 +42,11 @@ float convolve_1_in_1(int start_row_img,int start_col_img,int ch_img,int ch_kern
         {
             int opposite_col = kernel.w - start_col_kernel - 1;
 
-            float kernel_value_1 = get_pixel(kernel,kernel_center_row,start_col_kernel,ch_kernel);
-            float image_value_1 = get_pixel(img,start_col_img + kernel_center_row,start_row_img + start_col_kernel,ch_img);
+            float kernel_value_1 = get_pixel(kernel,start_col_kernel,kernel_center_row,ch_kernel);
+            float image_value_1 = get_pixel(img,start_col_img + start_col_kernel,start_row_img + kernel_center_row,ch_img);
 
-            float kernel_value_2 = get_pixel(kernel,kernel_center_row,opposite_col,ch_kernel);
-            float image_value_2 = get_pixel(img,start_col_img + kernel_center_row,start_row_img + opposite_col,ch_img);
+            float kernel_value_2 = get_pixel(kernel,opposite_col,kernel_center_row,ch_kernel);
+            float image_value_2 = get_pixel(img,start_col_img + opposite_col,start_row_img + kernel_center_row,ch_img);
 
             avg += kernel_value_1*image_value_1 + kernel_value_2*image_value_2;
         }
@@ -103,18 +103,6 @@ image calculate_avg(image img,image im,image filter,int mode)
                     pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,ch,im,filter);
                 }
                 set_pixel(img,col,row,ch,pixel_value);
-//                if(pixel_value < 0)
-//                {
-//                    set_pixel(img,col,row,ch,0);
-//                }
-//                else if (pixel_value > 1)
-//                {
-//                    set_pixel(img,col,row,ch,1);
-//                }
-//                else
-//                {
-//                    set_pixel(img,col,row,ch,pixel_value);
-//                }
             }
             //            float red = get_pixel(img,col,row,0);
             //            float green = get_pixel(img,col,row,1);
@@ -201,13 +189,13 @@ image make_highpass_filter()
     // TODO
     image img = make_image(3,3,1);
 
-    //float weight = 3;
+    set_pixel(img,1,0,0,-1);
+    set_pixel(img,0,1,0,-1);
+    set_pixel(img,2,1,0,-1);
+    set_pixel(img,1,2,0,-1);
+    set_pixel(img,1,1,0,4);
 
-    set_pixel(img,1,0,0,-1);//*weight);
-    set_pixel(img,0,1,0,-1);//*weight);
-    set_pixel(img,2,1,0,-1);//*weight);
-    set_pixel(img,1,2,0,-1);//*weight);
-    set_pixel(img,1,1,0,4);//*weight);
+    scale_image(img,0,3);
 
     return img;
 }
@@ -247,7 +235,7 @@ image make_emboss_filter()
 // Answer: sharpen and emboss, to keep the colored image
 
 // Question 2.2.2: Do we have to do any post-processing for the above filters? Which ones and why?
-// Answer: TODO
+// Answer: yes scaling the highpass filter
 
 image make_gaussian_filter(float sigma)
 {
@@ -289,6 +277,7 @@ image add_image(image a, image b)
             }
         }
     }
+    clamp_image(img);
     return img;
 }
 
@@ -307,6 +296,7 @@ image sub_image(image a, image b)
             }
         }
     }
+    clamp_image(img);
     return img;
 }
 

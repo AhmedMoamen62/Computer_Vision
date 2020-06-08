@@ -143,32 +143,17 @@ void clamp_image(image im)
     {
         for(int col = 0; col < im.w ; col++)
         {
-            float red = get_pixel(im,col,row,0);
-            float green = get_pixel(im,col,row,1);
-            float blue = get_pixel(im,col,row,2);
-            if(red > 1)
+            for(int ch = 0; ch <im.c ; ch++)
             {
-                set_pixel(im,col,row,0,1);
-            }
-            if(red < 0)
-            {
-                set_pixel(im,col,row,0,0);
-            }
-            if(green > 1)
-            {
-                set_pixel(im,col,row,1,1);
-            }
-            if(green < 0)
-            {
-                set_pixel(im,col,row,1,0);
-            }
-            if(blue > 1)
-            {
-                set_pixel(im,col,row,2,1);
-            }
-            if(blue < 0)
-            {
-                set_pixel(im,col,row,2,0);
+                float pixel_value = get_pixel(im,col,row,ch);
+                if(pixel_value < 0)
+                {
+                    set_pixel(im,col,row,ch,0);
+                }
+                else if(pixel_value > 1)
+                {
+                    set_pixel(im,col,row,ch,1);
+                }
             }
         }
     }
