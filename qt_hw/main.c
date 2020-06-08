@@ -8,9 +8,9 @@ int main()
 {
 
     image img = load_image("data/dog.jpg"); //data/dog.jpg
-//    image f = make_gaussian_filter(2);
-//    image temp = convolve_image(img,f,1);
-    image temp = nn_resize(img,img.w/7,img.h/7);
+    image f = make_gx_filter();
+    image temp = convolve_image(img,f,0);
+//    image temp = nn_resize(img,img.w/7,img.h/7);
     save_image(temp, "editable_dog");
 
 //    for(int row = 390 ; row < 394; row++)

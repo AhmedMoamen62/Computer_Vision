@@ -102,18 +102,19 @@ image calculate_avg(image img,image im,image filter,int mode)
                 {
                     pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,ch,im,filter);
                 }
-                if(pixel_value < 0)
-                {
-                    set_pixel(img,col,row,ch,0);
-                }
-                else if (pixel_value > 1)
-                {
-                    set_pixel(img,col,row,ch,1);
-                }
-                else
-                {
-                    set_pixel(img,col,row,ch,pixel_value);
-                }
+                set_pixel(img,col,row,ch,pixel_value);
+//                if(pixel_value < 0)
+//                {
+//                    set_pixel(img,col,row,ch,0);
+//                }
+//                else if (pixel_value > 1)
+//                {
+//                    set_pixel(img,col,row,ch,1);
+//                }
+//                else
+//                {
+//                    set_pixel(img,col,row,ch,pixel_value);
+//                }
             }
             //            float red = get_pixel(img,col,row,0);
             //            float green = get_pixel(img,col,row,1);
@@ -121,6 +122,7 @@ image calculate_avg(image img,image im,image filter,int mode)
             //            printf("x = %d , y = %d , red = %.6f , green = %.6f , blue = %.6f\n",col,row,red,green,blue);
         }
     }
+    clamp_image(img);
     return img;
 }
 

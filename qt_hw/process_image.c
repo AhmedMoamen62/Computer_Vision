@@ -49,7 +49,7 @@ float get_pixel(image im, int x, int y, int c)
 void set_pixel(image im, int x, int y, int c, float v)
 {
     // TODO Fill this in
-    if(x > 0 && y > 0 && x < im.w && y < im.h)
+    if(x >= 0 && y >= 0 && x < im.w && y < im.h)
     {
         int index = im.w*im.h*c + im.w*y + x;
         im.data[index] = v;
