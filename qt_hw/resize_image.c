@@ -2,8 +2,102 @@
 #include "image.h"
 #include "image_math.h"
 
-float nn_get_nearest_neighbor(image im, float x, float y, int c)
+float nn_interpolate(image im, float x, float y, int c)
 {
+     // TODO Fill in
+//    float pixel_val;
+
+//    // check if the pixel is out of the old image size
+//    if(y <= 0 && x <= 0)
+//    {
+//        pixel_val = get_pixel(im,0,0,c);
+//        return pixel_val;
+//    }
+
+//    if(y >= im.h && x >= im.w)
+//    {
+//        pixel_val = get_pixel(im,im.w - 1,im.h - 1,c);
+//        return pixel_val;
+//    }
+
+//    // check if the pixel is out of the row edge of the old image size
+//    if(y <= 0)
+//    {
+//        int left = floor(x);
+//        int right = ceil(x);
+
+//        float left_width = x - left;
+//        float right_width = right - x;
+
+//        if(left_width > right_width)
+//        {
+//            return get_pixel(im,right,0,c);
+//        }
+
+//        else
+//        {
+//            return get_pixel(im,left,0,c);
+//        }
+//    }
+
+//    if(y >= im.h)
+//    {
+//        int left = floor(x);
+//        int right = ceil(x);
+
+//        float left_width = x - left;
+//        float right_width = right - x;
+
+//        if(left_width > right_width)
+//        {
+//            return get_pixel(im,right,im.h - 1,c);
+//        }
+
+//        else
+//        {
+//            return get_pixel(im,left,im.h - 1,c);
+//        }
+//    }
+
+//    // check if the pixel is out of the column edge of the old image size
+//    if(x <= 0)
+//    {
+//        int top = floor(y);
+//        int bottom = ceil(y);
+
+//        float top_width = y - top;
+//        float bottom_width = bottom - y;
+
+//        if(top_width > bottom_width)
+//        {
+//            return get_pixel(im,0,bottom,c);
+//        }
+
+//        else
+//        {
+//            return get_pixel(im,0,top,c);
+//        }
+//    }
+
+//    if(x >= im.w)
+//    {
+//        int top = floor(y);
+//        int bottom = ceil(y);
+
+//        float top_width = y - top;
+//        float bottom_width = bottom - y;
+
+//        if(top_width > bottom_width)
+//        {
+//            return get_pixel(im,im.w - 1,bottom,c);
+//        }
+
+//        else
+//        {
+//            return get_pixel(im,im.w - 1,top,c);
+//        }
+//    }
+
     int x_right = ceil(x);
     int x_left = floor(x);
     int y_bottom = ceil(y);
@@ -42,114 +136,39 @@ float nn_get_nearest_neighbor(image im, float x, float y, int c)
     }
 }
 
-float nn_interpolate(image im, float x, float y, int c)
-{
-     // TODO Fill in
-    float pixel_val;
-
-    // check if the pixel is out of the old image size
-    if(y <= 0 && x <= 0)
-    {
-        pixel_val = get_pixel(im,0,0,c);
-        return pixel_val;
-    }
-
-    if(y >= im.h && x >= im.w)
-    {
-        pixel_val = get_pixel(im,im.w - 1,im.h - 1,c);
-        return pixel_val;
-    }
-
-    // check if the pixel is out of the row edge of the old image size
-    if(y <= 0)
-    {
-        int left = floor(x);
-        int right = ceil(x);
-
-        float left_width = x - left;
-        float right_width = right - x;
-
-        if(left_width > right_width)
-        {
-            return get_pixel(im,right,0,c);
-        }
-
-        else
-        {
-            return get_pixel(im,left,0,c);
-        }
-    }
-
-    if(y >= im.h)
-    {
-        int left = floor(x);
-        int right = ceil(x);
-
-        float left_width = x - left;
-        float right_width = right - x;
-
-        if(left_width > right_width)
-        {
-            return get_pixel(im,right,im.h - 1,c);
-        }
-
-        else
-        {
-            return get_pixel(im,left,im.h - 1,c);
-        }
-    }
-
-    // check if the pixel is out of the column edge of the old image size
-    if(x <= 0)
-    {
-        int top = floor(y);
-        int bottom = ceil(y);
-
-        float top_width = y - top;
-        float bottom_width = bottom - y;
-
-        if(top_width > bottom_width)
-        {
-            return get_pixel(im,0,bottom,c);
-        }
-
-        else
-        {
-            return get_pixel(im,0,top,c);
-        }
-    }
-
-    if(x >= im.w)
-    {
-        int top = floor(y);
-        int bottom = ceil(y);
-
-        float top_width = y - top;
-        float bottom_width = bottom - y;
-
-        if(top_width > bottom_width)
-        {
-            return get_pixel(im,im.w - 1,bottom,c);
-        }
-
-        else
-        {
-            return get_pixel(im,im.w - 1,top,c);
-        }
-    }
-
-    return nn_get_nearest_neighbor(im,x,y,c);
-}
-
 image nn_resize(image im, int w, int h)
 {
      // TODO Fill in (also fix that first line)
     image img = make_image(w,h,im.c);
     // calculate m and c parameter of the first order euation
-    float m_x = (float)im.w/w;
-    float c_x = m_x*(w - 0.5) - im.w + 0.5;
-    float m_y = (float)im.h/h;
-    float c_y = m_y*(h - 0.5) - im.h + 0.5;
+    float m_x,c_x,m_y,c_y;
+
+    m_x = (float)im.w/w;
+    c_x = m_x*(w - 0.5) - im.w + 0.5;
+
+    m_y = (float)im.h/h;
+    c_y = m_y*(h - 0.5) - im.h + 0.5;
+
+//    if(im.w < w)
+//    {
+//        m_x = (float)im.w/w;
+//        c_x = m_x*(w - 0.5) - im.w + 0.5;
+//    }
+//    else
+//    {
+//        m_x = (float)im.w/w;
+//        c_x = m_x*(w - 0.5) - im.w + 0.5;
+//    }
+//    if(im.h < h)
+//    {
+//        m_y = (float)im.h/h;
+//        c_y = m_y*(h - 0.5) - im.h + 0.5;
+//    }
+//    else
+//    {
+//        m_y = (float)im.h/h;
+//        c_y = m_y*(h - 0.5) - im.h + 0.5;
+//    }
 
     for(int row = 0 ; row < h ; row++)
     {
@@ -173,76 +192,76 @@ float bilinear_interpolate(image im, float x, float y, int c)
      // TODO Fill in
     float pixel_val;
 
-    // check if the pixel is out of the old image size
-    if(y <= 0 && x <= 0)
-    {
-        pixel_val = get_pixel(im,0,0,c);
-        return pixel_val;
-    }
+//    // check if the pixel is out of the old image size
+//    if(y <= 0 && x <= 0)
+//    {
+//        pixel_val = get_pixel(im,0,0,c);
+//        return pixel_val;
+//    }
 
-    if(y >= im.h && x >= im.w)
-    {
-        pixel_val = get_pixel(im,im.w - 1,im.h - 1,c);
-        return pixel_val;
-    }
+//    if(y >= im.h && x >= im.w)
+//    {
+//        pixel_val = get_pixel(im,im.w - 1,im.h - 1,c);
+//        return pixel_val;
+//    }
 
-    // check if the pixel is out of the row edge of the old image size
-    if(y <= 0)
-    {
-        int left = floor(x);
-        int right = ceil(x);
+//    // check if the pixel is out of the row edge of the old image size
+//    if(y <= 0)
+//    {
+//        int left = floor(x);
+//        int right = ceil(x);
 
-        int left_width = x - left;
-        int right_width = right - x;
+//        int left_width = x - left;
+//        int right_width = right - x;
 
-        pixel_val = (get_pixel(im,left,0,c)*right_width)
-                  + (get_pixel(im,right,0,c)*left_width);
+//        pixel_val = (get_pixel(im,left,0,c)*right_width)
+//                  + (get_pixel(im,right,0,c)*left_width);
 
-        return pixel_val;
-    }
+//        return pixel_val;
+//    }
 
-     if(y >= im.h)
-    {
-        int left = floor(x);
-        int right = ceil(x);
+//     if(y >= im.h)
+//    {
+//        int left = floor(x);
+//        int right = ceil(x);
 
-        int left_width = x - left;
-        int right_width = right - x;
+//        int left_width = x - left;
+//        int right_width = right - x;
 
-        pixel_val = (get_pixel(im,left,im.h - 1,c)*right_width)
-                  + (get_pixel(im,right,im.h - 1,c)*left_width);
+//        pixel_val = (get_pixel(im,left,im.h - 1,c)*right_width)
+//                  + (get_pixel(im,right,im.h - 1,c)*left_width);
 
-        return pixel_val;
-    }
+//        return pixel_val;
+//    }
 
-    // check if the pixel is out of the column edge of the old image size
-    if(x <= 0)
-    {
-        int top = floor(y);
-        int bottom = ceil(y);
+//    // check if the pixel is out of the column edge of the old image size
+//    if(x <= 0)
+//    {
+//        int top = floor(y);
+//        int bottom = ceil(y);
 
-        int top_width = y - top;
-        int bottom_width = bottom - y;
+//        int top_width = y - top;
+//        int bottom_width = bottom - y;
 
-        pixel_val = (get_pixel(im,0,top,c)*bottom_width)
-                  + (get_pixel(im,0,bottom,c)*top_width);
+//        pixel_val = (get_pixel(im,0,top,c)*bottom_width)
+//                  + (get_pixel(im,0,bottom,c)*top_width);
 
-        return pixel_val;
-    }
+//        return pixel_val;
+//    }
 
-    if(x >= im.w)
-    {
-        int top = floor(y);
-        int bottom = ceil(y);
+//    if(x >= im.w)
+//    {
+//        int top = floor(y);
+//        int bottom = ceil(y);
 
-        int top_width = y - top;
-        int bottom_width = bottom - y;
+//        int top_width = y - top;
+//        int bottom_width = bottom - y;
 
-        pixel_val = (get_pixel(im,im.w - 1,top,c)*bottom_width)
-                  + (get_pixel(im,im.w - 1,bottom,c)*top_width);
+//        pixel_val = (get_pixel(im,im.w - 1,top,c)*bottom_width)
+//                  + (get_pixel(im,im.w - 1,bottom,c)*top_width);
 
-        return pixel_val;
-    }
+//        return pixel_val;
+//    }
 
     int x_right = ceil(x);
     int x_left = floor(x);
@@ -267,10 +286,34 @@ image bilinear_resize(image im, int w, int h)
     // TODO Fill in (also fix that first line)
     image img = make_image(w,h,im.c);
     // calculate m and c parameter of the first order euation
-    float m_x = (float)im.w/w;
-    float c_x = m_x*(w - 0.5) - im.w + 0.5;
-    float m_y = (float)im.h/h;
-    float c_y = m_y*(h - 0.5) - im.h + 0.5;
+    float m_x,c_x,m_y,c_y;
+
+    m_x = (float)im.w/w;
+    c_x = m_x*(w - 0.5) - im.w + 0.5;
+
+    m_y = (float)im.h/h;
+    c_y = m_y*(h - 0.5) - im.h + 0.5;
+
+//    if(im.w < w)
+//    {
+//        m_x = (float)im.w/w;
+//        c_x = m_x*(w - 0.5) - im.w + 0.5;
+//    }
+//    else
+//    {
+//        m_x = (float)im.w/w;
+//        c_x = m_x*(w - 0.5) - im.w + 0.5;
+//    }
+//    if(im.h < h)
+//    {
+//        m_y = (float)im.h/h;
+//        c_y = m_y*(h - 0.5) - im.h + 0.5;
+//    }
+//    else
+//    {
+//        m_y = (float)im.h/h;
+//        c_y = m_y*(h - 0.5) - im.h + 0.5;
+//    }
 
     for(int row = 0 ; row < h ; row++)
     {

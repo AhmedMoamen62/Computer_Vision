@@ -35,7 +35,6 @@ void free_image(image im);
 // Resizing
 float nn_interpolate(image im, float x, float y, int c);
 image nn_resize(image im, int w, int h);
-float nn_get_nearest_neighbor(image im, float x, float y, int c);
 float bilinear_interpolate(image im, float x, float y, int c);
 image bilinear_resize(image im, int w, int h);
 

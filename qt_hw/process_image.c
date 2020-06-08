@@ -13,9 +13,9 @@ float get_pixel(image im, int x, int y, int c)
         return im.data[index];
     }
     // if greater than the w and h
-    else if(x > im.w && y > im.h)
+    else if(x >= im.w && y >= im.h)
     {
-        int index = im.w*im.h*(c+1);
+        int index = im.w*im.h*(c+1) - 1;
         return im.data[index];
     }
     // if less than the w and h
@@ -49,7 +49,7 @@ float get_pixel(image im, int x, int y, int c)
 void set_pixel(image im, int x, int y, int c, float v)
 {
     // TODO Fill this in
-    if(x < im.w && y < im.h)
+    if(x > 0 && y > 0 && x < im.w && y < im.h)
     {
         int index = im.w*im.h*c + im.w*y + x;
         im.data[index] = v;
