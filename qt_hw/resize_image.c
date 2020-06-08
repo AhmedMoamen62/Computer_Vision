@@ -111,10 +111,10 @@ float nn_interpolate(image im, float x, float y, int c)
 
     //printf("left_width = %.6f, right_width = %.6f, top_width = %.6f, bottom_width = %.6f \n", left_width,right_width,top_width,bottom_width);
 
-    float D1 = sqrt((float)pow(left_width,2) + (float)pow(top_width,2));
-    float D2 = sqrt((float)pow(right_width,2) + (float)pow(top_width,2));
-    float D3 = sqrt((float)pow(left_width,2) + (float)pow(bottom_width,2));
-    float D4 = sqrt((float)pow(right_width,2) + (float)pow(bottom_width,2));
+    float D1 = sqrtf(powf(left_width,2) + powf(top_width,2));
+    float D2 = sqrtf(powf(right_width,2) + powf(top_width,2));
+    float D3 = sqrtf(powf(left_width,2) + powf(bottom_width,2));
+    float D4 = sqrtf(powf(right_width,2) + powf(bottom_width,2));
 
     int min_index = four_min(D1,D2,D3,D4);
 

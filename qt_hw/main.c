@@ -8,6 +8,8 @@ int main()
 {
 
     image im = load_image("data/dog.jpg"); //data/dog.jpg
+    image * sobel = sobel_image(im);
+    save_image(sobel[0], "editable_dog");
 //    image f = make_gaussian_filter(2);
 //    image lfreq = convolve_image(im, f, 1);
 //    image hfreq = sub_image(im,lfreq);
@@ -16,11 +18,11 @@ int main()
 //    save_image(hfreq, "high-frequency");
 //    save_image(reconstruct, "reconstruct");
 
-    image hp = make_highpass_filter();
-    image im_filtered = convolve_image(im,hp,0);
-    image high = load_image("figs/dog-highpass.png");
-    image temp = sub_image(im_filtered,high);
-    save_image(temp, "editable_dog");
+//    image hp = make_highpass_filter();
+//    image im_filtered = convolve_image(im,hp,0);
+//    image high = load_image("figs/dog-highpass.png");
+//    image temp = sub_image(im_filtered,high);
+//    save_image(temp, "editable_dog");
 //    for(int row = 390 ; row < 394; row++)
 //    {
 //        for(int col = 206 ; col < 209 ; col++)

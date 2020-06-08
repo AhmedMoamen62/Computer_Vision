@@ -110,7 +110,7 @@ image calculate_avg(image img,image im,image filter,int mode)
             //            printf("x = %d , y = %d , red = %.6f , green = %.6f , blue = %.6f\n",col,row,red,green,blue);
         }
     }
-    clamp_image(img);
+    //clamp_image(img);
     return img;
 }
 
@@ -243,7 +243,7 @@ image make_gaussian_filter(float sigma)
     int sigma_size = sigma*6;
     int gaussian_size = sigma_size/2 % 2 == 1 ? sigma_size/2 : sigma_size/2 + 1;
 
-    float sigma_square = pow(sigma,2);
+    float sigma_square = powf(sigma,2);
     float outter_coefficient = (1/(TWOPI*sigma_square));
     float inner_coefficient = -(1/(2*sigma_square));
 
@@ -251,10 +251,10 @@ image make_gaussian_filter(float sigma)
 
     for(int row = 0 ; row < img.h ; row++)
     {
-        float row_square = pow(row,2);
+        float row_square = powf(row,2);
         for(int col = 0; col < img.w ; col++)
         {
-            float pixel_value = outter_coefficient*exp(inner_coefficient*(row_square + pow(col,2)));
+            float pixel_value = outter_coefficient*exp(inner_coefficient*(row_square + powf(col,2)));
             set_pixel(img,col,row,0,pixel_value);
         }
     }
@@ -312,6 +312,8 @@ image make_gx_filter()
     set_pixel(img,2,1,0,2);
     set_pixel(img,2,2,0,1);
 
+    //scale_image(img,0,3);
+
     return img;
 }
 
@@ -327,18 +329,74 @@ image make_gy_filter()
     set_pixel(img,1,2,0,2);
     set_pixel(img,2,2,0,1);
 
+    //scale_image(img,0,3);
+
     return img;
 }
 
 void feature_normalize(image im)
 {
     // TODO
+    float min_value = get_pixel(im,0,0,0);
+    float max_value = get_pixel(im,0,0,0);
+
+    for(int row = 0 ; row < im.h ; row++)
+    {
+        for(int col = 0 ; col < im.w ; col++)
+        {
+            for(int ch = 0; ch < im.c ; ch++)
+            {
+                float pixel_value = get_pixel(im,col,row,ch);
+                if(pixel_value > max_value)
+                {
+                    max_value = pixel_value;
+                }
+                if(pixel_value < min_value)
+                {
+                    min_value = pixel_value;
+                }
+            }
+        }
+    }
+
+    float denominator = max_value - min_value;
+
+    for(int row = 0 ; row < im.h ; row++)
+    {
+        for(int col = 0 ; col < im.w ; col++)
+        {
+            for(int ch = 0; ch < im.c ; ch++)
+            {
+                float pixel_value = (get_pixel(im,col,row,ch) - min_value)/denominator;
+                set_pixel(im,col,row,ch,pixel_value);
+            }
+        }
+    }
 }
 
 image *sobel_image(image im)
 {
     // TODO
     image * img = calloc(2, sizeof(image));
+    img[0] = make_image(im.w,im.h,1);
+    image gy = make_gy_filter();
+    image gx = make_gx_filter();
+
+    image img_gy = convolve_image(im,gy,0);
+    image img_gx = convolve_image(im,gx,0);
+
+    for(int row = 0 ; row < im.h ; row++)
+    {
+        for(int col = 0 ; col < im.w ; col++)
+        {
+            float gx_value = get_pixel(img_gx,col,row,0);
+            float gy_value = get_pixel(img_gy,col,row,0);
+            float pixel_value = sqrtf(powf(gx_value,2) + powf(gy_value,2));
+            set_pixel(img[0],col,row,0,pixel_value);
+        }
+    }
+
+    feature_normalize(img[0]);
 
     return img;
 }
