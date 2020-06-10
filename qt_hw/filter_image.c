@@ -411,5 +411,26 @@ image *sobel_image(image im)
 image colorize_sobel(image im)
 {
     // TODO
-    return make_image(1,1,1);
+    image * sobel = sobel_image(im);
+    image img = make_image(im.w,im.h,3);
+
+    feature_normalize(sobel[0]);
+    feature_normalize(sobel[1]);
+
+    for(int row = 0 ; row < im.h ; row++)
+    {
+        for(int col = 0 ; col < im.w ; col++)
+        {
+            float value = get_pixel(sobel[0],col,row,0);
+            float saturation = get_pixel(sobel[0],col,row,0);
+            float hue = get_pixel(sobel[1],col,row,0);
+
+            set_pixel(img,col,row,0,hue);
+            set_pixel(img,col,row,1,saturation);
+            set_pixel(img,col,row,2,value);
+        }
+    }
+    hsv_to_rgb(img);
+
+    return img;
 }

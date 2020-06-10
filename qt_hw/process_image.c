@@ -181,9 +181,12 @@ void rgb_to_hsv(image im)
             float red = get_pixel(im,col,row,0);
             float green = get_pixel(im,col,row,1);
             float blue = get_pixel(im,col,row,2);
+
             float value = three_way_max(red,green,blue);
             set_pixel(im,col,row,2,value);
+
             float difference = value - three_way_min(red,green,blue);
+
             if(value != 0)
             {
                 float saturation = difference/value;
@@ -236,21 +239,24 @@ void hsv_to_rgb(image im)
             float value = get_pixel(im,col,row,2);
             float saturation = get_pixel(im,col,row,1);
             float hue = get_pixel(im,col,row,0);
+
             float hue_deg = hue*6;
             float difference = saturation*value;
+            float min = value - difference;
+
             if(hue_deg > 1 && hue_deg <= 3) // green
             {
                 set_pixel(im,col,row,1,value);
                 if(hue_deg <= 2)
                 {
-                    float blue = value - difference;
+                    float blue = min;
                     set_pixel(im,col,row,2,blue);
                     float red = blue - difference*(hue_deg - 2);
                     set_pixel(im,col,row,0,red);
                 }
                 else
                 {
-                    float red = value - difference;
+                    float red = min;
                     set_pixel(im,col,row,0,red);
                     float blue = red + difference*(hue_deg - 2);
                     set_pixel(im,col,row,2,blue);
@@ -261,14 +267,14 @@ void hsv_to_rgb(image im)
                 set_pixel(im,col,row,2,value);
                 if(hue_deg <= 4)
                 {
-                    float red = value - difference;
+                    float red = min;
                     set_pixel(im,col,row,0,red);
                     float green = red - difference*(hue_deg - 4);
                     set_pixel(im,col,row,1,green);
                 }
                 else
                 {
-                    float green = value - difference;
+                    float green = min;
                     set_pixel(im,col,row,1,green);
                     float red = green + difference*(hue_deg - 4);
                     set_pixel(im,col,row,0,red);
@@ -279,14 +285,14 @@ void hsv_to_rgb(image im)
                 set_pixel(im,col,row,0,value);
                 if(hue_deg <= 1)
                 {
-                    float blue = value - difference;
+                    float blue = min;
                     set_pixel(im,col,row,2,blue);
                     float green = blue + difference*hue_deg;
                     set_pixel(im,col,row,1,green);
                 }
                 else
                 {
-                    float green = value - difference;
+                    float green = min;
                     set_pixel(im,col,row,1,green);
                     float blue = green - difference*(hue_deg-6);
                     set_pixel(im,col,row,2,blue);
