@@ -1,11 +1,11 @@
-[X1,map1]=imread('figs/high-frequency.png');
-[X2,map2]=imread('figs/dog-highpass.png');
-[X3,map3]=imread('qt_hw/editable_dog.jpg');
-[X4,map4]=imread('data/dog.jpg');
-subplot(2,2,1), imshow(X1,map1)
-subplot(2,2,2), imshow(X2,map2)
-subplot(2,2,3), imshow(X3,map3)
-subplot(2,2,4), imshow(X4,map4)
+[X1,map1]=imread('figs/theta.png');
+[X2,map2]=imread('qt_hw/editable_dog.jpg');
+##[X3,map3]=imread('qt_hw/editable_dog.jpg');
+##[X4,map4]=imread('data/dog.jpg');
+subplot(1,2,1), imshow(X1,map1)
+subplot(1,2,2), imshow(X2,map2)
+##subplot(2,2,3), imshow(X3,map3)
+##subplot(2,2,4), imshow(X4,map4)
 function btn_down (obj, evt)
   cp = get (gca, 'CurrentPoint');
   x = round (cp(1, 1));

@@ -103,14 +103,9 @@ image calculate_avg(image img,image im,image filter,int mode)
                     pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,ch,im,filter);
                 }
                 set_pixel(img,col,row,ch,pixel_value);
-            }
-            //            float red = get_pixel(img,col,row,0);
-            //            float green = get_pixel(img,col,row,1);
-            //            float blue = get_pixel(img,col,row,2);
-            //            printf("x = %d , y = %d , red = %.6f , green = %.6f , blue = %.6f\n",col,row,red,green,blue);
+            };
         }
     }
-    //clamp_image(img);
     return img;
 }
 
@@ -195,8 +190,6 @@ image make_highpass_filter()
     set_pixel(img,1,2,0,-1);
     set_pixel(img,1,1,0,4);
 
-    scale_image(img,0,3);
-
     return img;
 }
 
@@ -235,7 +228,7 @@ image make_emboss_filter()
 // Answer: sharpen and emboss, to keep the colored image
 
 // Question 2.2.2: Do we have to do any post-processing for the above filters? Which ones and why?
-// Answer: yes scaling the highpass filter
+// Answer: yes clamp the image after highpass filter
 
 image make_gaussian_filter(float sigma)
 {
@@ -277,7 +270,6 @@ image add_image(image a, image b)
             }
         }
     }
-    clamp_image(img);
     return img;
 }
 
@@ -296,7 +288,6 @@ image sub_image(image a, image b)
             }
         }
     }
-    clamp_image(img);
     return img;
 }
 
@@ -312,8 +303,6 @@ image make_gx_filter()
     set_pixel(img,2,1,0,2);
     set_pixel(img,2,2,0,1);
 
-    //scale_image(img,0,3);
-
     return img;
 }
 
@@ -328,8 +317,6 @@ image make_gy_filter()
     set_pixel(img,0,2,0,1);
     set_pixel(img,1,2,0,2);
     set_pixel(img,2,2,0,1);
-
-    //scale_image(img,0,3);
 
     return img;
 }
@@ -361,14 +348,30 @@ void feature_normalize(image im)
 
     float denominator = max_value - min_value;
 
+    if(denominator == 0)
+    {
+        for(int row = 0 ; row < im.h ; row++)
+        {
+            for(int col = 0 ; col < im.w ; col++)
+            {
+                for(int ch = 0; ch < im.c ; ch++)
+                {
+                    set_pixel(im,col,row,ch,0);
+                }
+            }
+        }
+        return;
+    }
+
     for(int row = 0 ; row < im.h ; row++)
     {
         for(int col = 0 ; col < im.w ; col++)
         {
             for(int ch = 0; ch < im.c ; ch++)
             {
-                float pixel_value = (get_pixel(im,col,row,ch) - min_value)/denominator;
-                set_pixel(im,col,row,ch,pixel_value);
+                float pixel_value = get_pixel(im,col,row,ch);
+                float normalized_pixel = (pixel_value - min_value)/denominator;
+                set_pixel(im,col,row,ch,normalized_pixel);
             }
         }
     }
@@ -379,6 +382,8 @@ image *sobel_image(image im)
     // TODO
     image * img = calloc(2, sizeof(image));
     img[0] = make_image(im.w,im.h,1);
+    img[1] = make_image(im.w,im.h,1);
+
     image gy = make_gy_filter();
     image gx = make_gx_filter();
 
@@ -391,12 +396,14 @@ image *sobel_image(image im)
         {
             float gx_value = get_pixel(img_gx,col,row,0);
             float gy_value = get_pixel(img_gy,col,row,0);
+
             float pixel_value = sqrtf(powf(gx_value,2) + powf(gy_value,2));
             set_pixel(img[0],col,row,0,pixel_value);
+
+            float angle = atan2f(gy_value,gx_value);
+            set_pixel(img[1],col,row,0,angle);
         }
     }
-
-    feature_normalize(img[0]);
 
     return img;
 }

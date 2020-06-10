@@ -6,10 +6,28 @@
 
 int main()
 {
-
     image im = load_image("data/dog.jpg"); //data/dog.jpg
+    image theta = load_image("figs/theta.png");
     image * sobel = sobel_image(im);
-    save_image(sobel[0], "editable_dog");
+
+    feature_normalize(sobel[0]);
+    feature_normalize(sobel[1]);
+
+    image sub = sub_image(sobel[1],theta);
+    clamp_image(sub);
+
+    save_image(sub, "editable_dog");
+
+    // to band a frequencies in the image , subtract smoothed images with difference sigma
+//    image img = load_image("data/dog.jpg"); //data/dog.jpg
+//    image g0 = make_gaussian_filter(1);
+//    image g1 = make_gaussian_filter(2);
+//    image img_0 = convolve_image(img,g0,1);
+//    image img_1 = convolve_image(img,g1,1);
+//    image diff = sub_image(img_1,img_0);
+//    save_image(diff, "editable_dog");
+
+
 //    image f = make_gaussian_filter(2);
 //    image lfreq = convolve_image(im, f, 1);
 //    image hfreq = sub_image(im,lfreq);
