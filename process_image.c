@@ -13,9 +13,9 @@ float get_pixel(image im, int x, int y, int c)
         return im.data[index];
     }
     // if greater than the w and h
-    else if(x > im.w && y > im.h)
+    else if(x >= im.w && y >= im.h)
     {
-        int index = im.w*im.h*(c+1);
+        int index = im.w*im.h*(c+1) - 1;
         return im.data[index];
     }
     // if less than the w and h
@@ -49,7 +49,7 @@ float get_pixel(image im, int x, int y, int c)
 void set_pixel(image im, int x, int y, int c, float v)
 {
     // TODO Fill this in
-    if(x < im.w && y < im.h)
+    if(x >= 0 && y >= 0 && x < im.w && y < im.h)
     {
         int index = im.w*im.h*c + im.w*y + x;
         im.data[index] = v;
@@ -93,6 +93,22 @@ image rgb_to_grayscale(image im)
     return gray;
 }
 
+image average_image(image im)
+{
+    assert(im.c == 3);
+    image average = make_image(im.w, im.h, 1);
+    // TODO Fill this in
+    for(int row = 0 ; row < average.h ; row++)
+    {
+        for(int col = 0; col < average.w ; col++)
+        {
+            float pixel_value = get_pixel(im,col,row,0) + get_pixel(im,col,row,1) + get_pixel(im,col,row,2);
+            set_pixel(average,col,row,0,pixel_value/3.0);
+        }
+    }
+    return average;
+}
+
 void shift_image(image im, int c, float v)
 {
     // TODO Fill this in
@@ -127,32 +143,17 @@ void clamp_image(image im)
     {
         for(int col = 0; col < im.w ; col++)
         {
-            float red = get_pixel(im,col,row,0);
-            float green = get_pixel(im,col,row,1);
-            float blue = get_pixel(im,col,row,2);
-            if(red > 1)
+            for(int ch = 0; ch <im.c ; ch++)
             {
-                set_pixel(im,col,row,0,1);
-            }
-            if(red < 0)
-            {
-                set_pixel(im,col,row,0,0);
-            }
-            if(green > 1)
-            {
-                set_pixel(im,col,row,1,1);
-            }
-            if(green < 0)
-            {
-                set_pixel(im,col,row,1,0);
-            }
-            if(blue > 1)
-            {
-                set_pixel(im,col,row,2,1);
-            }
-            if(blue < 0)
-            {
-                set_pixel(im,col,row,2,0);
+                float pixel_value = get_pixel(im,col,row,ch);
+                if(pixel_value < 0)
+                {
+                    set_pixel(im,col,row,ch,0);
+                }
+                else if(pixel_value > 1)
+                {
+                    set_pixel(im,col,row,ch,1);
+                }
             }
         }
     }
@@ -180,9 +181,12 @@ void rgb_to_hsv(image im)
             float red = get_pixel(im,col,row,0);
             float green = get_pixel(im,col,row,1);
             float blue = get_pixel(im,col,row,2);
+
             float value = three_way_max(red,green,blue);
             set_pixel(im,col,row,2,value);
+
             float difference = value - three_way_min(red,green,blue);
+
             if(value != 0)
             {
                 float saturation = difference/value;
@@ -235,21 +239,24 @@ void hsv_to_rgb(image im)
             float value = get_pixel(im,col,row,2);
             float saturation = get_pixel(im,col,row,1);
             float hue = get_pixel(im,col,row,0);
+
             float hue_deg = hue*6;
             float difference = saturation*value;
+            float min = value - difference;
+
             if(hue_deg > 1 && hue_deg <= 3) // green
             {
                 set_pixel(im,col,row,1,value);
                 if(hue_deg <= 2)
                 {
-                    float blue = value - difference;
+                    float blue = min;
                     set_pixel(im,col,row,2,blue);
                     float red = blue - difference*(hue_deg - 2);
                     set_pixel(im,col,row,0,red);
                 }
                 else
                 {
-                    float red = value - difference;
+                    float red = min;
                     set_pixel(im,col,row,0,red);
                     float blue = red + difference*(hue_deg - 2);
                     set_pixel(im,col,row,2,blue);
@@ -260,14 +267,14 @@ void hsv_to_rgb(image im)
                 set_pixel(im,col,row,2,value);
                 if(hue_deg <= 4)
                 {
-                    float red = value - difference;
+                    float red = min;
                     set_pixel(im,col,row,0,red);
                     float green = red - difference*(hue_deg - 4);
                     set_pixel(im,col,row,1,green);
                 }
                 else
                 {
-                    float green = value - difference;
+                    float green = min;
                     set_pixel(im,col,row,1,green);
                     float red = green + difference*(hue_deg - 4);
                     set_pixel(im,col,row,0,red);
@@ -278,14 +285,14 @@ void hsv_to_rgb(image im)
                 set_pixel(im,col,row,0,value);
                 if(hue_deg <= 1)
                 {
-                    float blue = value - difference;
+                    float blue = min;
                     set_pixel(im,col,row,2,blue);
                     float green = blue + difference*hue_deg;
                     set_pixel(im,col,row,1,green);
                 }
                 else
                 {
-                    float green = value - difference;
+                    float green = min;
                     set_pixel(im,col,row,1,green);
                     float blue = green - difference*(hue_deg-6);
                     set_pixel(im,col,row,2,blue);
