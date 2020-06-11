@@ -16,14 +16,15 @@ int main()
 //    rgb_to_hsv(im);
 //    hsv_to_rgb(im);
 
-    image color = colorize_sobel(im);
-    image gaussian = make_gaussian_filter(2);
-    image smooth = convolve_image(color,gaussian,1);
+
+    image gaussian = make_gaussian_filter(3);
+    image smooth = convolve_image(im,gaussian,1);
+    image color = colorize_sobel(smooth);
 
 //    image sub = sub_image(sobel[1],theta);
 //    clamp_image(sub);
 
-    save_image(smooth, "editable_dog");
+    save_image(color, "editable_dog");
 
     // to band a frequencies in the image , subtract smoothed images with difference sigma
 //    image img = load_image("data/dog.jpg"); //data/dog.jpg

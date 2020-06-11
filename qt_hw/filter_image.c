@@ -165,7 +165,7 @@ image convolve_image(image im, image filter, int preserve)
         img = calculate_avg(img,im,filter,0);
         if(preserve != 1)
         {
-            img = average_image(img);
+            img = rgb_to_grayscale(img);
         }
     }
     else if(im.c == filter.c)
@@ -173,7 +173,7 @@ image convolve_image(image im, image filter, int preserve)
         img = calculate_avg(img,im,filter,1);
         if(preserve != 1)
         {
-            img = average_image(img);
+            img = rgb_to_grayscale(img);
         }
     }
     return img;
