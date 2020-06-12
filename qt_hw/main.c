@@ -3,33 +3,35 @@
 #include <math.h>
 #include "image.h"
 #include "args.h"
-
+#include "test.h"
 int main()
 {
-    image im = load_image("data/dog.jpg"); //data/dog.jpg
-    //image theta = load_image("figs/theta.png");
-//    image * sobel = sobel_image(im);
+    run_tests();
 
-//    feature_normalize(sobel[0]);
-//    feature_normalize(sobel[1]);
+//    image im = load_image("data/dog.jpg"); //data/dog.jpg
+//    //image theta = load_image("figs/theta.png");
+////    image * sobel = sobel_image(im);
 
-//    rgb_to_hsv(im);
-//    hsv_to_rgb(im);
+////    feature_normalize(sobel[0]);
+////    feature_normalize(sobel[1]);
+
+////    rgb_to_hsv(im);
+////    hsv_to_rgb(im);
 
 
-    image gaussian = make_gaussian_filter(3);
-    image smooth = convolve_image(im,gaussian,1);
-    image color = colorize_sobel(smooth);
+//    image gaussian = make_gaussian_filter(3);
+//    image smooth = convolve_image(im,gaussian,1);
+//    image color = colorize_sobel(smooth);
 
-//    image sub = sub_image(sobel[1],theta);
-//    clamp_image(sub);
+////    image sub = sub_image(sobel[1],theta);
+////    clamp_image(sub);
 
-    save_image(color, "editable_dog");
+//    save_image(color, "editable_dog");
 
     // to band a frequencies in the image , subtract smoothed images with difference sigma
 //    image img = load_image("data/dog.jpg"); //data/dog.jpg
-//    image g0 = make_gaussian_filter(1);
-//    image g1 = make_gaussian_filter(2);
+//    image g0 = make_gaussian_filter(3);
+//    image g1 = make_gaussian_filter(4);
 //    image img_0 = convolve_image(img,g0,1);
 //    image img_1 = convolve_image(img,g1,1);
 //    image diff = sub_image(img_1,img_0);
@@ -68,7 +70,7 @@ int main()
 //        }
 //    }
 
-    system("shotwell editable_dog.jpg");
+    //system("shotwell editable_dog.jpg");
 
     return 0;
 }

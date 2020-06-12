@@ -13,7 +13,8 @@ SOURCES += \
         matrix.c \
         panorama_image.c \
         process_image.c \
-        resize_image.c
+        resize_image.c \
+        test.c
 
 HEADERS += \
     args.h \
@@ -21,4 +22,5 @@ HEADERS += \
     image_math.h \
     matrix.h \
     stb_image.h \
-    stb_image_write.h
+    stb_image_write.h \
+    test.h

@@ -61,7 +61,8 @@ SOURCES       = args.c \
 		matrix.c \
 		panorama_image.c \
 		process_image.c \
-		resize_image.c 
+		resize_image.c \
+		test.c 
 OBJECTS       = args.o \
 		filter_image.o \
 		harris_image.o \
@@ -71,7 +72,8 @@ OBJECTS       = args.o \
 		matrix.o \
 		panorama_image.o \
 		process_image.o \
-		resize_image.o
+		resize_image.o \
+		test.o
 DIST          = /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/common/unix.conf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/common/linux.conf \
@@ -281,7 +283,8 @@ DIST          = /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/spec_pre.prf
 		image_math.h \
 		matrix.h \
 		stb_image.h \
-		stb_image_write.h args.c \
+		stb_image_write.h \
+		test.h args.c \
 		filter_image.c \
 		harris_image.c \
 		image_math.c \
@@ -290,7 +293,8 @@ DIST          = /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/spec_pre.prf
 		matrix.c \
 		panorama_image.c \
 		process_image.c \
-		resize_image.c
+		resize_image.c \
+		test.c
 QMAKE_TARGET  = qt_hw
 DESTDIR       = 
 TARGET        = qt_hw
@@ -778,7 +782,8 @@ load_image.o: load_image.c image.h \
 
 main.o: main.c image.h \
 		matrix.h \
-		args.h
+		args.h \
+		test.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o main.o main.c
 
 matrix.o: matrix.c matrix.h
@@ -797,6 +802,12 @@ resize_image.o: resize_image.c image.h \
 		matrix.h \
 		image_math.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o resize_image.o resize_image.c
+
+test.o: test.c matrix.h \
+		image.h \
+		test.h \
+		args.h
+	$(CC) -c $(CFLAGS) $(INCPATH) -o test.o test.c
 
 ####### Install
 
