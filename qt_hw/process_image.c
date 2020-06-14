@@ -5,45 +5,26 @@
 #include "image.h"
 #include "image_math.h"
 
+int clip_axis(int axis,int min,int max)
+{
+    if(axis > max)
+    {
+        return max;
+    }
+    if(axis < min)
+    {
+        return min;
+    }
+    return axis;
+}
+
 float get_pixel(image im, int x, int y, int c)
 {
-    if(x < im.w && y < im.h && x >= 0 && y >= 0)
-    {
-        int index = im.w*im.h*c + im.w*y + x;
-        return im.data[index];
-    }
-    // if greater than the w and h
-    else if(x >= im.w && y >= im.h)
-    {
-        int index = im.w*im.h*(c+1) - 1;
-        return im.data[index];
-    }
-    // if less than the w and h
-    else if(x < 0 && y < 0)
-    {
-        int index = im.w*im.h*c;
-        return im.data[index];
-    }
-    else if(x < 0 && y < im.h)
-    {
-        int index = im.w*im.h*c + im.w*y;
-        return im.data[index];
-    }
-    else if(x >= im.w && y < im.h)
-    {
-        int index = im.w*im.h*c + im.w*(y+1) - 1;
-        return im.data[index];
-    }
-    else if(x < im.w && y < 0)
-    {
-        int index = im.w*im.h*c + x;
-        return im.data[index];
-    }
-    else if(x < im.w && y >= im.h)
-    {
-        int index = im.w*im.h*c + im.w*(im.h-1) + x;
-        return im.data[index];
-    }
+    x = clip_axis(x,0,im.w - 1);
+    y = clip_axis(y,0,im.h - 1);
+    c = clip_axis(c,0,im.c - 1);
+    int index = im.w*im.h*c + im.w*y + x;
+    return im.data[index];
 }
 
 void set_pixel(image im, int x, int y, int c, float v)

@@ -4,55 +4,27 @@
 
 float nn_interpolate(image im, float x, float y, int c)
 {
-     // TODO Fill in
-    int x_right = ceil(x);
-    int x_left = floor(x);
-    int y_bottom = ceil(y);
-    int y_top = floor(y);
+    // TODO Fill in
+    int neighboor_x = round(x);
+    int neighboor_y = round(y);
 
+    float pixel_value = get_pixel(im, neighboor_x, neighboor_y, c);
 
-    float left_width = x - x_left;
-    float right_width = x_right - x;
-    float top_width = y - y_top;
-    float bottom_width = y_bottom - y;
-
-    float D1 = sqrtf(powf(left_width,2) + powf(top_width,2));
-    float D2 = sqrtf(powf(right_width,2) + powf(top_width,2));
-    float D3 = sqrtf(powf(left_width,2) + powf(bottom_width,2));
-    float D4 = sqrtf(powf(right_width,2) + powf(bottom_width,2));
-
-    int min_index = four_min(D1,D2,D3,D4);
-
-    if(min_index == 0)
-    {
-        return get_pixel(im,x_left,y_top,c);
-    }
-    else if(min_index == 1)
-    {
-        return get_pixel(im,x_right,y_top,c);
-    }
-    else if(min_index == 2)
-    {
-        return get_pixel(im,x_left,y_bottom,c);
-    }
-    else if(min_index == 3)
-    {
-        return get_pixel(im,x_right,y_bottom,c);
-    }
+    return pixel_value;
 }
 
 image nn_resize(image im, int w, int h)
 {
-     // TODO Fill in (also fix that first line)
+    // TODO Fill in (also fix that first line)
     image img = make_image(w,h,im.c);
     // calculate m and c parameter of the first order euation
     float m_x,c_x,m_y,c_y;
 
     m_x = (float)im.w/w;
-    c_x = m_x*(w - 0.5) - im.w + 0.5;
+    c_x = m_x*0.5 - 0.5;
 
     m_y = (float)im.h/h;
-    c_y = m_y*(h - 0.5) - im.h + 0.5;
+    c_y = m_y*0.5 - 0.5;
 
     for(int row = 0 ; row < h ; row++)
     {
@@ -73,7 +45,7 @@ image nn_resize(image im, int w, int h)
 
 float bilinear_interpolate(image im, float x, float y, int c)
 {
-     // TODO Fill in
+    // TODO Fill in
     float pixel_val;
 
     int x_right = ceil(x);
@@ -102,10 +74,10 @@ image bilinear_resize(image im, int w, int h)
     float m_x,c_x,m_y,c_y;
 
     m_x = (float)im.w/w;
-    c_x = m_x*(w - 0.5) - im.w + 0.5;
+    c_x = m_x*0.5 - 0.5;
 
     m_y = (float)im.h/h;
-    c_y = m_y*(h - 0.5) - im.h + 0.5;
+    c_y = m_y*0.5 - 0.5;
 
     for(int row = 0 ; row < h ; row++)
     {
