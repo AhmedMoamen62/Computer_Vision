@@ -386,27 +386,27 @@ void test_cornerness()
 
 void run_tests()
 {
-    //test_matrix();
-    test_get_pixel();
-    test_set_pixel();
-    test_copy();
-    test_shift();
-    test_grayscale();
-    test_rgb_to_hsv();
-    test_hsv_to_rgb();
-    test_nn_resize();
-    test_bl_resize();
-    test_multiple_resize();
-    test_gaussian_filter();
-    test_sharpen_filter();
-    test_emboss_filter();
-    test_highpass_filter();
-    test_convolution();
-    test_gaussian_blur();
-    test_hybrid_image();
-    test_frequency_image();
-    test_sobel();
-//    test_structure();
+//    test_matrix();
+//    test_get_pixel();
+//    test_set_pixel();
+//    test_copy();
+//    test_shift();
+//    test_grayscale();
+//    test_rgb_to_hsv();
+//    test_hsv_to_rgb();
+//    test_nn_resize();
+//    test_bl_resize();
+//    test_multiple_resize();
+//    test_gaussian_filter();
+//    test_sharpen_filter();
+//    test_emboss_filter();
+//    test_highpass_filter();
+//    test_convolution();
+//    test_gaussian_blur();
+//    test_hybrid_image();
+//    test_frequency_image();
+//    test_sobel();
+    test_structure();
 //    test_cornerness();
     printf("%d tests, %d passed, %d failed\n", tests_total, tests_total-tests_fail, tests_fail);
 }

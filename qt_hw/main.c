@@ -6,7 +6,14 @@
 #include "test.h"
 int main()
 {
-    //run_tests();
+
+    run_tests();
+//    image img = load_image("data/dog.jpg");
+
+//    image matrix = structure_matrix(img,2);
+//    feature_normalize(matrix);
+
+//    save_image(matrix,"editable_dog");
 
     //    image im = load_image("data/dog.jpg"); //data/dog.jpg
     //    //image theta = load_image("figs/theta.png");

@@ -141,6 +141,35 @@ void clamp_image(image im)
 }
 
 
+void set_channel(image out,int ch_out,image in, int ch_in)
+{
+    assert(out.w == in.w && out.h == in.h);
+
+    for(int row = 0 ; row < out.h; row++)
+    {
+        for(int col = 0 ; col < out.w ; col++)
+        {
+            set_pixel(out,col,row,ch_out,get_pixel(in,col,row,ch_in));
+        }
+    }
+}
+
+
+image get_channel(image im, int c)
+{
+    image img = make_image(im.w,im.h,1);
+    for(int row = 0 ; row < img.h; row++)
+    {
+        for(int col = 0 ; col < img.w ; col++)
+        {
+            set_pixel(img,col,row,0,get_pixel(im,col,row,c));
+        }
+    }
+
+    return img;
+}
+
+
 // These might be handy
 float three_way_max(float a, float b, float c)
 {

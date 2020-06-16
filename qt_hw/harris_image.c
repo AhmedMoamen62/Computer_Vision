@@ -114,6 +114,30 @@ image structure_matrix(image im, float sigma)
 {
     image S = make_image(im.w, im.h, 3);
     // TODO: calculate structure matrix for im.
+    image gaussian_weight = make_gaussian_filter(sigma);
+
+    image gx = make_gx_filter();
+    image gy = make_gy_filter();
+
+    image img_gx = convolve_image(im,gx,0);
+    image img_gy = convolve_image(im,gy,0);
+
+    for(int row = 0 ; row < S.h; row++)
+    {
+        for(int col = 0 ; col < S.w ; col++)
+        {
+            float channel_1 = get_pixel(img_gx,col,row,0)*get_pixel(img_gx,col,row,0);
+            float channel_2 = get_pixel(img_gy,col,row,0)*get_pixel(img_gy,col,row,0);
+            float channel_3 = get_pixel(img_gx,col,row,0)*get_pixel(img_gy,col,row,0);
+
+            set_pixel(S,col,row,0,channel_1);
+            set_pixel(S,col,row,1,channel_2);
+            set_pixel(S,col,row,2,channel_3);
+        }
+    }
+
+    S = convolve_image(S,gaussian_weight,1);
+
     return S;
 }
 
