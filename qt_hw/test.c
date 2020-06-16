@@ -406,8 +406,8 @@ void run_tests()
 //    test_hybrid_image();
 //    test_frequency_image();
 //    test_sobel();
-    test_structure();
-//    test_cornerness();
+//    test_structure();
+    test_cornerness();
     printf("%d tests, %d passed, %d failed\n", tests_total, tests_total-tests_fail, tests_fail);
 }
 

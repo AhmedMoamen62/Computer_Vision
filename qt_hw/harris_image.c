@@ -81,29 +81,29 @@ void mark_corners(image im, descriptor *d, int n)
 // Creates a 1d Gaussian filter.
 // float sigma: standard deviation of Gaussian.
 // returns: single row image of the filter.
-image make_1d_gaussian(float sigma)
-{
-    // TODO: optional, make separable 1d Gaussian.
-    return make_image(1,1,1);
-}
+//image make_1d_gaussian(float sigma)
+//{
+//    // TODO: optional, make separable 1d Gaussian.
+//    return make_image(1,1,1);
+//}
 
-// Smooths an image using separable Gaussian filter.
-// image im: image to smooth.
-// float sigma: std dev. for Gaussian.
-// returns: smoothed image.
-image smooth_image(image im, float sigma)
-{
-    if(1){
-        image g = make_gaussian_filter(sigma);
-        image s = convolve_image(im, g, 1);
-        free_image(g);
-        return s;
-    } else {
-        // TODO: optional, use two convolutions with 1d gaussian filter.
-        // If you implement, disable the above if check.
-        return copy_image(im);
-    }
-}
+//// Smooths an image using separable Gaussian filter.
+//// image im: image to smooth.
+//// float sigma: std dev. for Gaussian.
+//// returns: smoothed image.
+//image smooth_image(image im, float sigma)
+//{
+//    if(1){
+//        image g = make_gaussian_filter(sigma);
+//        image s = convolve_image(im, g, 1);
+//        free_image(g);
+//        return s;
+//    } else {
+//        // TODO: optional, use two convolutions with 1d gaussian filter.
+//        // If you implement, disable the above if check.
+//        return copy_image(im);
+//    }
+//}
 
 // Calculate the structure matrix of an image.
 // image im: the input image.
@@ -149,6 +149,19 @@ image cornerness_response(image S)
     image R = make_image(S.w, S.h, 1);
     // TODO: fill in R, "cornerness" for each pixel using the structure matrix.
     // We'll use formulation det(S) - alpha * trace(S)^2, alpha = .06.
+    for(int row = 0 ; row < S.h; row++)
+    {
+        for(int col = 0 ; col < S.w ; col++)
+        {
+            float det = get_pixel(S,col,row,0)*get_pixel(S,col,row,1)
+                      - get_pixel(S,col,row,2)*get_pixel(S,col,row,2);
+            float trace = get_pixel(S,col,row,0) + get_pixel(S,col,row,1);
+            float pixel_value = det - 0.06*trace*trace;
+
+            set_pixel(R,col,row,0,pixel_value);
+        }
+    }
+
     return R;
 }
 

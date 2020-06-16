@@ -272,6 +272,64 @@ image make_gaussian_filter(float sigma)
     return img;
 }
 
+
+image make_1d_gaussian(float sigma)
+{
+    // TODO
+    int sigma_size = sigma*6;
+    int gaussian_size = sigma_size + 1 - sigma_size%2;
+
+    float sigma_square = powf(sigma,2);
+    float outter_coefficient = 1.0/(TWOPI*sigma_square);
+    float inner_coefficient = -1.0/(2*sigma_square);
+
+    image img = make_image(1,gaussian_size,1);
+    int center = (int)gaussian_size/2;
+
+    for(int row = 0 ; row < img.h ; row++)
+    {
+        float row_square = powf(row - center,2);
+        for(int col = 0; col < img.w ; col++)
+        {
+            float pixel_value = outter_coefficient*expf(inner_coefficient*(row_square + powf(col - center,2)));
+            set_pixel(img,col,row,0,pixel_value);
+        }
+    }
+    l1_normalize(img);
+    return img;
+}
+
+image image_transpose(image img)
+{
+    image img_transpose = make_image(img.h,img.w,img.c);
+
+    for(int row = 0; row < img.h ; row++)
+    {
+        for(int col = 0; col < img.w ; col++)
+        {
+            for(int ch = 0;  ch < img.c ; ch++)
+            {
+                set_pixel(img_transpose,row,col,ch,get_pixel(img,col,row,ch));
+            }
+        }
+    }
+
+    return img_transpose;
+}
+
+image smooth_image(image im, float sigma)
+{
+    image img = make_image(im.w,im.h,im.c);
+
+    image horizontal_gaussian = make_1d_gaussian(sigma);
+    image vertical_gaussian = image_transpose(horizontal_gaussian);
+
+    image first_conv = convolve_image(im,horizontal_gaussian,1);
+    img = convolve_image(first_conv,vertical_gaussian,1);
+
+    return img;
+}
+
 image add_image(image a, image b)
 {
     // TODO

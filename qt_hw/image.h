@@ -82,12 +82,14 @@ image make_highpass_filter();
 image make_sharpen_filter();
 image make_emboss_filter();
 image make_gaussian_filter(float sigma);
+image make_1d_gaussian(float sigma);
 image make_gx_filter();
 image make_gy_filter();
 void feature_normalize(image im);
 void threshold_image(image im, float thresh);
 image *sobel_image(image im);
 image colorize_sobel(image im);
+image image_transpose(image img);
 image smooth_image(image im, float sigma);
 
 // Harris and Stitching

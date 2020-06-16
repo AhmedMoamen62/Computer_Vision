@@ -7,7 +7,20 @@
 int main()
 {
 
-    run_tests();
+    image img = load_image("data/dog.jpg");
+
+    image structure = structure_matrix(img,2);
+
+    image cornerness = cornerness_response(structure);
+    feature_normalize(cornerness);
+
+    save_image(cornerness,"editable_dog");
+//    image img = load_image("data/dog.jpg");
+
+//    image smooth = smooth_image(img,2);
+
+//    save_image(smooth,"editable_dog");
+
 //    image img = load_image("data/dog.jpg");
 
 //    image matrix = structure_matrix(img,2);
