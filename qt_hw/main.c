@@ -1,20 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include "image.h"
 #include "args.h"
 #include "test.h"
 int main()
 {
+    //run_tests();
+
+    clock_t start, end;
+    float cpu_time_used;
 
     image img = load_image("data/dog.jpg");
 
-    image structure = structure_matrix(img,2);
+    start = clock();
+    image gaussian = make_gaussian_filter(2);
+    image smoothed_2d = convolve_image(img,gaussian,1);
+    end = clock();
+    cpu_time_used = ((float) (end - start)) / CLOCKS_PER_SEC;
+    printf("time for 2D Gaussian = %.6f\n",cpu_time_used);
 
-    image cornerness = cornerness_response(structure);
-    feature_normalize(cornerness);
+    start = clock();
+    image smoothed_1d = smooth_image(img,2);
+    end = clock();
+    cpu_time_used = ((float) (end - start)) / CLOCKS_PER_SEC;
+    printf("time for 1D Gaussian = %.6f\n",cpu_time_used);
 
-    save_image(cornerness,"editable_dog");
+    image sub = sub_image(smoothed_1d,smoothed_2d);
+
+    save_image(sub,"editable_dog");
+
+//    image img = load_image("data/dog.jpg");
+
+//    image structure = structure_matrix(img,2);
+
+//    image cornerness = cornerness_response(structure);
+//    feature_normalize(cornerness);
+
+//    save_image(cornerness,"editable_dog");
+
 //    image img = load_image("data/dog.jpg");
 
 //    image smooth = smooth_image(img,2);

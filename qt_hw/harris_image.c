@@ -81,29 +81,54 @@ void mark_corners(image im, descriptor *d, int n)
 // Creates a 1d Gaussian filter.
 // float sigma: standard deviation of Gaussian.
 // returns: single row image of the filter.
-//image make_1d_gaussian(float sigma)
-//{
-//    // TODO: optional, make separable 1d Gaussian.
-//    return make_image(1,1,1);
-//}
+image make_1d_gaussian(float sigma)
+{
+    // TODO: optional, make separable 1d Gaussian.
+    int sigma_size = sigma*6;
+    int gaussian_size = sigma_size + 1 - sigma_size%2;
 
-//// Smooths an image using separable Gaussian filter.
-//// image im: image to smooth.
-//// float sigma: std dev. for Gaussian.
-//// returns: smoothed image.
-//image smooth_image(image im, float sigma)
-//{
-//    if(1){
-//        image g = make_gaussian_filter(sigma);
-//        image s = convolve_image(im, g, 1);
-//        free_image(g);
-//        return s;
-//    } else {
-//        // TODO: optional, use two convolutions with 1d gaussian filter.
-//        // If you implement, disable the above if check.
-//        return copy_image(im);
-//    }
-//}
+    float sigma_square = powf(sigma,2);
+    float outter_coefficient = sqrtf(1.0/(TWOPI*sigma_square));
+    float inner_coefficient = -1.0/(2*sigma_square);
+
+    image img = make_image(gaussian_size,1,1);
+    int center = (int)gaussian_size/2;
+
+    for(int col = 0 ; col < img.w ; col++)
+    {
+        float pixel_value = outter_coefficient*expf(inner_coefficient*(powf(col - center,2)));
+        set_pixel(img,col,0,0,pixel_value);
+    }
+    l1_normalize(img);
+    return img;
+}
+
+// Smooths an image using separable Gaussian filter.
+// image im: image to smooth.
+// float sigma: std dev. for Gaussian.
+// returns: smoothed image.
+image smooth_image(image im, float sigma)
+{
+    if(0){
+        image g = make_gaussian_filter(sigma);
+        image s = convolve_image(im, g, 1);
+        free_image(g);
+        return s;
+    } else {
+        // TODO: optional, use two convolutions with 1d gaussian filter.
+        // If you implement, disable the above if check.
+        image horizontal_gaussian = make_1d_gaussian(sigma);
+        image vertical_gaussian = image_transpose(horizontal_gaussian);
+
+        image img = convolve_image(im,horizontal_gaussian,1);
+        img = convolve_image(img,vertical_gaussian,1);
+
+        free_image(horizontal_gaussian);
+        free_image(vertical_gaussian);
+
+        return img;
+    }
+}
 
 // Calculate the structure matrix of an image.
 // image im: the input image.
@@ -137,6 +162,12 @@ image structure_matrix(image im, float sigma)
     }
 
     S = convolve_image(S,gaussian_weight,1);
+
+    free_image(gx);
+    free_image(gy);
+    free_image(img_gx);
+    free_image(img_gy);
+    free_image(gaussian_weight);
 
     return S;
 }
@@ -177,6 +208,13 @@ image nms_image(image im, int w)
     //     for neighbors within w:
     //         if neighbor response greater than pixel response:
     //             set response to be very low (I use -999999 [why not 0??])
+    for(int row = 0 ; row < im.h ; row++)
+    {
+        for(int col = 0 ; col < im.w ; col++)
+        {
+
+        }
+    }
     return r;
 }
 

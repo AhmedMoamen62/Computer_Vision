@@ -85,6 +85,7 @@ image make_gaussian_filter(float sigma);
 image make_1d_gaussian(float sigma);
 image make_gx_filter();
 image make_gy_filter();
+void l1_normalize(image im);
 void feature_normalize(image im);
 void threshold_image(image im, float thresh);
 image *sobel_image(image im);
