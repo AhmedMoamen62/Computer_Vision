@@ -301,7 +301,11 @@ image add_image(image a, image b)
         {
             for(int ch = 0;  ch < a.c ; ch++)
             {
-                set_pixel(img,col,row,ch,get_pixel(a,col,row,ch) + get_pixel(b,col,row,ch));
+                float pixel_a = get_pixel(a,col,row,ch);
+                float pixel_b = get_pixel(b,col,row,ch);
+                float pixel_value = pixel_a + pixel_b;
+
+                set_pixel(img,col,row,ch,pixel_value);
             }
         }
     }
@@ -319,7 +323,11 @@ image sub_image(image a, image b)
         {
             for(int ch = 0;  ch < a.c ; ch++)
             {
-                set_pixel(img,col,row,ch,get_pixel(a,col,row,ch) - get_pixel(b,col,row,ch));
+                float pixel_a = get_pixel(a,col,row,ch);
+                float pixel_b = get_pixel(b,col,row,ch);
+                float pixel_value = pixel_a - pixel_b;
+
+                set_pixel(img,col,row,ch,pixel_value);
             }
         }
     }

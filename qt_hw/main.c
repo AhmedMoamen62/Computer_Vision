@@ -9,9 +9,11 @@ int main()
 {
     //run_tests();
     image img = load_image("data/Rainier1.png");
-    detect_and_draw_corners(img,2,50,3);
+    save_image(img,"jpg_to_png");
+    image convert = load_image("jpg_to_png.jpg");
+    detect_and_draw_corners(convert,2,50,3);
     image corner = load_image("figs/corners.jpg");
-    image sub = sub_image(img,corner);
+    image sub = sub_image(convert,corner);
     clamp_image(sub);
     save_image(sub,"editable_dog");
 //    clock_t start, end;

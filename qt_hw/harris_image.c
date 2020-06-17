@@ -28,21 +28,21 @@ descriptor describe_index(image im, int i)
 {
     int w = 5;
     descriptor d;
-    d.p.x = i%im.w;
-    d.p.y = i/im.w;
-    d.data = calloc(w*w*im.c, sizeof(float));
-    d.n = w*w*im.c;
+    d.p.x = i%im.w; // suppose image 3*3 and i = 7 , so x (col) = 1 as 7%3 = 1
+    d.p.y = i/im.w; // suppose image 3*3 and i = 7 , so y (row) = 1 as 7/3 = 2
+    d.data = calloc(w*w*im.c, sizeof(float)); // allocate descriptor (image) with 5*5 pixels with the same number of channels
+    d.n = w*w*im.c; // number of pixels
     int c, dx, dy;
     int count = 0;
     // If you want you can experiment with other descriptors
     // This subtracts the central value from neighbors
     // to compensate some for exposure/lighting changes.
-    for(c = 0; c < im.c; ++c){
-        float cval = im.data[c*im.w*im.h + i];
-        for(dx = -w/2; dx < (w+1)/2; ++dx){
-            for(dy = -w/2; dy < (w+1)/2; ++dy){
-                float val = get_pixel(im, i%im.w+dx, i/im.w+dy, c);
-                d.data[count++] = cval - val;
+    for(c = 0; c < im.c; ++c){  // iterate over all channels
+        float cval = im.data[c*im.w*im.h + i];  // get pixel value of the index in each channel
+        for(dx = -w/2; dx < (w+1)/2; ++dx){     // iterate over the descriptor pixels in columns from -2 to 2
+            for(dy = -w/2; dy < (w+1)/2; ++dy){ // iterate over the descriptor pixels in rows from -2 to 2
+                float val = get_pixel(im, i%im.w+dx, i/im.w+dy, c); // get the neighboor pixel in the descriptor
+                d.data[count++] = cval - val;                       // set this pixel in the descriptor with the difference between index pixel and descriptor itself
             }
         }
     }
@@ -57,6 +57,7 @@ void mark_spot(image im, point p)
     int x = p.x;
     int y = p.y;
     int i;
+    // draw the pink cross with 9 pixels arround the corner
     for(i = -9; i < 10; ++i){
         set_pixel(im, x+i, y, 0, 1);
         set_pixel(im, x, y+i, 0, 1);
@@ -74,7 +75,7 @@ void mark_spot(image im, point p)
 void mark_corners(image im, descriptor *d, int n)
 {
     int i;
-    for(i = 0; i < n; ++i){
+    for(i = 0; i < n; ++i){ // iterate over number of descriptors or corners
         mark_spot(im, d[i].p);
     }
 }
@@ -140,8 +141,6 @@ image structure_matrix(image im, float sigma)
 {
     image S = make_image(im.w, im.h, 3);
     // TODO: calculate structure matrix for im.
-    image gaussian_weight = make_gaussian_filter(sigma);
-
     image gx = make_gx_filter();
     image gy = make_gy_filter();
 
@@ -162,13 +161,12 @@ image structure_matrix(image im, float sigma)
         }
     }
 
-    S = convolve_image(S,gaussian_weight,1);
+    S = smooth_image(S,sigma);
 
     free_image(gx);
     free_image(gy);
     free_image(img_gx);
     free_image(img_gy);
-    free_image(gaussian_weight);
 
     return S;
 }
@@ -288,7 +286,8 @@ image nms_image(image im, int w)
             for(int ch = 0 ; ch < r.c ; ch++)
             {
                 float pixel_value  = get_pixel(r,col,row,ch);
-                set_pixel(r,col,row,ch,check_window_maximum(r,ch,start_row_img,start_col_img,window_size,pixel_value));
+                float suppression_value = check_window_maximum(r,ch,start_row_img,start_col_img,window_size,pixel_value);
+                set_pixel(r,col,row,ch,suppression_value);
             }
         }
     }
@@ -342,13 +341,14 @@ descriptor *harris_corner_detector(image im, float sigma, float thresh, int nms,
     descriptor *d = calloc(count, sizeof(descriptor));
     //TODO: fill in array *d with descriptors of corners, use describe_index.
     int index  = 0;
-    for(int i = 0 ; i < count ; i++)
+    int i = 0;
+    for(; i < count ; i++)
     {
-        for(; index < Rnms.h*Rnms.w*Rnms.c ; index++)
+        for(; index < Rnms.h*Rnms.w ; index++)
         {
             if(Rnms.data[index] > thresh)
             {
-               d[i] = describe_index(Rnms,index);
+               d[i] = describe_index(im,index);
                index++;
                break;
             }
