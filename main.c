@@ -15,7 +15,7 @@ int main()
     image corner = load_image("figs/corners.jpg");
     image sub = sub_image(convert,corner);
     clamp_image(sub);
-    save_image(sub,"editable_dog");
+    save_image(convert,"editable_dog");
 //    clock_t start, end;
 //    float cpu_time_used;
 

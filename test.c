@@ -386,7 +386,7 @@ void test_cornerness()
 
 void run_tests()
 {
-//    test_matrix();
+    //test_matrix();
     test_get_pixel();
     test_set_pixel();
     test_copy();

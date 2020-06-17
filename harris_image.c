@@ -286,7 +286,7 @@ image nms_image(image im, int w)
             for(int ch = 0 ; ch < r.c ; ch++)
             {
                 float pixel_value  = get_pixel(r,col,row,ch);
-                float suppression_value = check_window_maximum(r,ch,start_row_img,start_col_img,window_size,pixel_value);
+                float suppression_value = check_window_maximum(im,ch,start_row_img,start_col_img,window_size,pixel_value);
                 set_pixel(r,col,row,ch,suppression_value);
             }
         }
