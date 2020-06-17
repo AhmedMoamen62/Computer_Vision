@@ -5,45 +5,26 @@
 #include "image.h"
 #include "image_math.h"
 
+int clip_axis(int axis,int min,int max)
+{
+    if(axis > max)
+    {
+        return max;
+    }
+    if(axis < min)
+    {
+        return min;
+    }
+    return axis;
+}
+
 float get_pixel(image im, int x, int y, int c)
 {
-    if(x < im.w && y < im.h && x >= 0 && y >= 0)
-    {
-        int index = im.w*im.h*c + im.w*y + x;
-        return im.data[index];
-    }
-    // if greater than the w and h
-    else if(x >= im.w && y >= im.h)
-    {
-        int index = im.w*im.h*(c+1) - 1;
-        return im.data[index];
-    }
-    // if less than the w and h
-    else if(x < 0 && y < 0)
-    {
-        int index = im.w*im.h*c;
-        return im.data[index];
-    }
-    else if(x < 0 && y < im.h)
-    {
-        int index = im.w*im.h*c + im.w*y;
-        return im.data[index];
-    }
-    else if(x >= im.w && y < im.h)
-    {
-        int index = im.w*im.h*c + im.w*(y+1) - 1;
-        return im.data[index];
-    }
-    else if(x < im.w && y < 0)
-    {
-        int index = im.w*im.h*c + x;
-        return im.data[index];
-    }
-    else if(x < im.w && y >= im.h)
-    {
-        int index = im.w*im.h*c + im.w*(im.h-1) + x;
-        return im.data[index];
-    }
+    x = clip_axis(x,0,im.w - 1);
+    y = clip_axis(y,0,im.h - 1);
+    c = clip_axis(c,0,im.c - 1);
+    int index = im.w*im.h*c + im.w*y + x;
+    return im.data[index];
 }
 
 void set_pixel(image im, int x, int y, int c, float v)
@@ -64,14 +45,11 @@ image copy_image(image im)
     {
         for(int col = 0; col < copy.w ; col++)
         {
-            float pixel_value = get_pixel(im,col,row,0);
-            set_pixel(copy,col,row,0,pixel_value);
-
-            pixel_value = get_pixel(im,col,row,1);
-            set_pixel(copy,col,row,1,pixel_value);
-
-            pixel_value = get_pixel(im,col,row,2);
-            set_pixel(copy,col,row,2,pixel_value);
+            for(int  ch = 0 ; ch < copy.c ; ch++)
+            {
+                float pixel_value = get_pixel(im,col,row,ch);
+                set_pixel(copy,col,row,ch,pixel_value);
+            }
         }
     }
     return copy;
@@ -157,6 +135,35 @@ void clamp_image(image im)
             }
         }
     }
+}
+
+
+void set_channel(image out,int ch_out,image in, int ch_in)
+{
+    assert(out.w == in.w && out.h == in.h);
+
+    for(int row = 0 ; row < out.h; row++)
+    {
+        for(int col = 0 ; col < out.w ; col++)
+        {
+            set_pixel(out,col,row,ch_out,get_pixel(in,col,row,ch_in));
+        }
+    }
+}
+
+
+image get_channel(image im, int c)
+{
+    image img = make_image(im.w,im.h,1);
+    for(int row = 0 ; row < img.h; row++)
+    {
+        for(int col = 0 ; col < img.w ; col++)
+        {
+            set_pixel(img,col,row,0,get_pixel(im,col,row,c));
+        }
+    }
+
+    return img;
 }
 
 

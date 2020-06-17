@@ -6,5 +6,7 @@ int three_max(float a, float b, float c);
 int three_min(float a, float b, float c);
 int four_max(float a, float b, float c, float d);
 int four_min(float a, float b, float c, float d);
+float four_max_value(float a, float b, float c, float d);
+float four_min_value(float a, float b, float c, float d);
 
 #endif // IMAGE_MATH_H

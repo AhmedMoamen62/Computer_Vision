@@ -6,6 +6,8 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
+// DO NOT CHANGE THIS FILE
+
 typedef struct{
     int w,h,c;
     float *data;
@@ -39,6 +41,7 @@ typedef struct{
 
 
 // Basic operations
+int clip_axis(int axis,int min,int max);
 float get_pixel(image im, int x, int y, int c);
 void set_pixel(image im, int x, int y, int c, float v);
 image copy_image(image im);
@@ -50,6 +53,7 @@ void hsv_to_rgb(image im);
 void shift_image(image im, int c, float v);
 void scale_image(image im, int c, float v);
 void clamp_image(image im);
+void set_channel(image out,int ch_out,image in, int ch_in);
 image get_channel(image im, int c);
 int same_image(image a, image b);
 image sub_image(image a, image b);
@@ -78,16 +82,23 @@ image make_highpass_filter();
 image make_sharpen_filter();
 image make_emboss_filter();
 image make_gaussian_filter(float sigma);
+image make_1d_gaussian(float sigma);
 image make_gx_filter();
 image make_gy_filter();
+void l1_normalize(image im);
 void feature_normalize(image im);
 void threshold_image(image im, float thresh);
 image *sobel_image(image im);
 image colorize_sobel(image im);
+image image_transpose(image img);
+image smooth_image(image im, float sigma);
 
 // Harris and Stitching
 image structure_matrix(image im, float sigma);
 image cornerness_response(image S);
+image nms_image(image im, int w);
+int count_responses(image img,float thresh);
+float check_window_maximum(image img,int ch,int start_row_img,int start_col_img,int window_size,float value);
 void free_descriptors(descriptor *d, int n);
 image cylindrical_project(image im, float f);
 void mark_corners(image im, descriptor *d, int n);

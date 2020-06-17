@@ -37,7 +37,7 @@ int same_image(image a, image b){
     for(i = 0; i < a.w*a.h*a.c; ++i){
         if(!within_eps(a.data[i], b.data[i])) 
         {
-            printf("The value should be %f, but it is %f! \n", b.data[i], a.data[i]);
+            printf("The value should be %f, but it is %f! , %d \n", b.data[i], a.data[i],i);
             return 0;
         }
     }
@@ -386,7 +386,7 @@ void test_cornerness()
 
 void run_tests()
 {
-    //test_matrix();
+//    test_matrix();
     test_get_pixel();
     test_set_pixel();
     test_copy();

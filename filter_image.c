@@ -85,25 +85,65 @@ float convolve_1_in_1(int start_row_img,int start_col_img,int ch_img,int ch_kern
 image calculate_avg(image img,image im,image filter,int mode)
 {
 
-    for(int row = 0 ; row < img.h ; row++)
+    for(int row = 0 ; row < im.h ; row++)
     {
         int start_row_img = row - filter.h/2;
-        for(int col = 0; col < img.w ; col++)
+        for(int col = 0; col < im.w ; col++)
         {
             int start_col_img = col - filter.w/2;
-            for(int ch = 0 ; ch < img.c ; ch++)
+            float pixel_value = 0;
+            for(int ch = 0 ; ch < im.c ; ch++)
             {
-                float pixel_value;
+                // check if mode = 0 , we get all the convolved pixels from every channed in the original image
                 if(mode == 0)
                 {
-                    pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,0,im,filter);
+                    pixel_value += convolve_1_in_1(start_row_img,start_col_img,ch,0,im,filter);
                 }
+                // check if mode = 1 , we set every channel with the opposite convolved channel with the original image
                 else
                 {
                     pixel_value = convolve_1_in_1(start_row_img,start_col_img,ch,ch,im,filter);
-                }
-                set_pixel(img,col,row,ch,pixel_value);
-            };
+                    set_pixel(img,col,row,ch,pixel_value);
+                }                
+            }
+            if(mode == 0)
+            {
+                set_pixel(img,col,row,0,pixel_value);
+            }
+        }
+    }
+    return img;
+}
+
+image convolve_image(image im, image filter, int preserve)
+{
+    // TODO
+    assert(im.c == filter.c || filter.c == 1);
+    image img;
+    if(filter.c == 1)
+    {
+        if(preserve != 1)
+        {
+            img = make_image(im.w,im.h,1);
+            img = calculate_avg(img,im,filter,0);
+        }
+        else
+        {
+            img = make_image(im.w,im.h,3);
+            img = calculate_avg(img,im,filter,1);
+        }
+    }
+    else if(im.c == filter.c)
+    {
+        if(preserve != 1)
+        {
+            img = make_image(im.w,im.h,1);
+            img = calculate_avg(img,im,filter,0);
+        }
+        else
+        {
+            img = make_image(im.w,im.h,im.c);
+            img = calculate_avg(img,im,filter,1);
         }
     }
     return img;
@@ -150,30 +190,6 @@ image make_box_filter(int w)
         for(int col = 0; col < img.w ; col++)
         {
             set_pixel(img,col,row,0,weight);
-        }
-    }
-    return img;
-}
-
-image convolve_image(image im, image filter, int preserve)
-{
-    // TODO
-    assert(im.c == filter.c || filter.c == 1);
-    image img = make_image(im.w,im.h,im.c);
-    if(filter.c == 1)
-    {
-        img = calculate_avg(img,im,filter,0);
-        if(preserve != 1)
-        {
-            img = average_image(img);
-        }
-    }
-    else if(im.c == filter.c)
-    {
-        img = calculate_avg(img,im,filter,1);
-        if(preserve != 1)
-        {
-            img = average_image(img);
         }
     }
     return img;
@@ -234,25 +250,44 @@ image make_gaussian_filter(float sigma)
 {
     // TODO
     int sigma_size = sigma*6;
-    int gaussian_size = sigma_size/2 % 2 == 1 ? sigma_size/2 : sigma_size/2 + 1;
+    int gaussian_size = sigma_size + 1 - sigma_size%2;
 
     float sigma_square = powf(sigma,2);
-    float outter_coefficient = (1/(TWOPI*sigma_square));
-    float inner_coefficient = -(1/(2*sigma_square));
+    float outter_coefficient = 1.0/(TWOPI*sigma_square);
+    float inner_coefficient = -1.0/(2*sigma_square);
 
     image img = make_image(gaussian_size,gaussian_size,1);
+    int center = (int)gaussian_size/2;
 
     for(int row = 0 ; row < img.h ; row++)
     {
-        float row_square = powf(row,2);
+        float row_square = powf(row - center,2);
         for(int col = 0; col < img.w ; col++)
         {
-            float pixel_value = outter_coefficient*exp(inner_coefficient*(row_square + powf(col,2)));
+            float pixel_value = outter_coefficient*expf(inner_coefficient*(row_square + powf(col - center,2)));
             set_pixel(img,col,row,0,pixel_value);
         }
     }
     l1_normalize(img);
     return img;
+}
+
+image image_transpose(image img)
+{
+    image img_transpose = make_image(img.h,img.w,img.c);
+
+    for(int row = 0; row < img_transpose.h ; row++)
+    {
+        for(int col = 0; col < img_transpose.w ; col++)
+        {
+            for(int ch = 0;  ch < img_transpose.c ; ch++)
+            {
+                set_pixel(img_transpose,col,row,ch,get_pixel(img,row,col,ch));
+            }
+        }
+    }
+
+    return img_transpose;
 }
 
 image add_image(image a, image b)
@@ -266,7 +301,11 @@ image add_image(image a, image b)
         {
             for(int ch = 0;  ch < a.c ; ch++)
             {
-                set_pixel(img,col,row,ch,get_pixel(a,col,row,ch) + get_pixel(b,col,row,ch));
+                float pixel_a = get_pixel(a,col,row,ch);
+                float pixel_b = get_pixel(b,col,row,ch);
+                float pixel_value = pixel_a + pixel_b;
+
+                set_pixel(img,col,row,ch,pixel_value);
             }
         }
     }
@@ -284,7 +323,11 @@ image sub_image(image a, image b)
         {
             for(int ch = 0;  ch < a.c ; ch++)
             {
-                set_pixel(img,col,row,ch,get_pixel(a,col,row,ch) - get_pixel(b,col,row,ch));
+                float pixel_a = get_pixel(a,col,row,ch);
+                float pixel_b = get_pixel(b,col,row,ch);
+                float pixel_value = pixel_a - pixel_b;
+
+                set_pixel(img,col,row,ch,pixel_value);
             }
         }
     }
@@ -405,6 +448,11 @@ image *sobel_image(image im)
         }
     }
 
+    free_image(gx);
+    free_image(gy);
+    free_image(img_gx);
+    free_image(img_gy);
+
     return img;
 }
 
@@ -431,6 +479,8 @@ image colorize_sobel(image im)
         }
     }
     hsv_to_rgb(img);
+
+    free(sobel);
 
     return img;
 }
