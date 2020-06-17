@@ -768,7 +768,8 @@ filter_image.o: filter_image.c image.h \
 	$(CC) -c $(CFLAGS) $(INCPATH) -o filter_image.o filter_image.c
 
 harris_image.o: harris_image.c image.h \
-		matrix.h
+		matrix.h \
+		image_math.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o harris_image.o harris_image.c
 
 image_math.o: image_math.c image_math.h

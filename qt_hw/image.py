@@ -16,7 +16,7 @@ def click_event(event,x,y,flags,param):
         cv2.imshow('image', img)
 
 #img = np.zeros((512,512,3),np.uint8)
-img = cv2.imread('figs/theta.png',1)
+img = cv2.imread('data/Rainier1.png',1)
 cv2.imshow('image',img)
 cv2.setMouseCallback('image',click_event)
 cv2.waitKey(0)

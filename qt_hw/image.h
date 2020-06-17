@@ -96,6 +96,9 @@ image smooth_image(image im, float sigma);
 // Harris and Stitching
 image structure_matrix(image im, float sigma);
 image cornerness_response(image S);
+image nms_image(image im, int w);
+int count_responses(image img,float thresh);
+float check_window_maximum(image img,int ch,int start_row_img,int start_col_img,int window_size,float value);
 void free_descriptors(descriptor *d, int n);
 image cylindrical_project(image im, float f);
 void mark_corners(image im, descriptor *d, int n);

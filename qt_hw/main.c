@@ -8,28 +8,33 @@
 int main()
 {
     //run_tests();
-
-    clock_t start, end;
-    float cpu_time_used;
-
-    image img = load_image("data/dog.jpg");
-
-    start = clock();
-    image gaussian = make_gaussian_filter(2);
-    image smoothed_2d = convolve_image(img,gaussian,1);
-    end = clock();
-    cpu_time_used = ((float) (end - start)) / CLOCKS_PER_SEC;
-    printf("time for 2D Gaussian = %.6f\n",cpu_time_used);
-
-    start = clock();
-    image smoothed_1d = smooth_image(img,2);
-    end = clock();
-    cpu_time_used = ((float) (end - start)) / CLOCKS_PER_SEC;
-    printf("time for 1D Gaussian = %.6f\n",cpu_time_used);
-
-    image sub = sub_image(smoothed_1d,smoothed_2d);
-
+    image img = load_image("data/Rainier1.png");
+    detect_and_draw_corners(img,2,50,3);
+    image corner = load_image("figs/corners.jpg");
+    image sub = sub_image(img,corner);
+    clamp_image(sub);
     save_image(sub,"editable_dog");
+//    clock_t start, end;
+//    float cpu_time_used;
+
+//    image img = load_image("data/dog.jpg");
+
+//    start = clock();
+//    image gaussian = make_gaussian_filter(2);
+//    image smoothed_2d = convolve_image(img,gaussian,1);
+//    end = clock();
+//    cpu_time_used = ((float) (end - start)) / CLOCKS_PER_SEC;
+//    printf("time for 2D Gaussian = %.6f\n",cpu_time_used);
+
+//    start = clock();
+//    image smoothed_1d = smooth_image(img,2);
+//    end = clock();
+//    cpu_time_used = ((float) (end - start)) / CLOCKS_PER_SEC;
+//    printf("time for 1D Gaussian = %.6f\n",cpu_time_used);
+
+//    image sub = sub_image(smoothed_1d,smoothed_2d);
+
+//    save_image(sub,"editable_dog");
 
 //    image img = load_image("data/dog.jpg");
 

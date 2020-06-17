@@ -45,14 +45,11 @@ image copy_image(image im)
     {
         for(int col = 0; col < copy.w ; col++)
         {
-            float pixel_value = get_pixel(im,col,row,0);
-            set_pixel(copy,col,row,0,pixel_value);
-
-            pixel_value = get_pixel(im,col,row,1);
-            set_pixel(copy,col,row,1,pixel_value);
-
-            pixel_value = get_pixel(im,col,row,2);
-            set_pixel(copy,col,row,2,pixel_value);
+            for(int  ch = 0 ; ch < copy.c ; ch++)
+            {
+                float pixel_value = get_pixel(im,col,row,ch);
+                set_pixel(copy,col,row,ch,pixel_value);
+            }
         }
     }
     return copy;

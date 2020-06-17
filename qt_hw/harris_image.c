@@ -4,6 +4,7 @@
 #include <math.h>
 #include <assert.h>
 #include "image.h"
+#include "image_math.h"
 #include "matrix.h"
 #include <time.h>
 
@@ -196,6 +197,75 @@ image cornerness_response(image S)
     return R;
 }
 
+float check_window_maximum(image img,int ch,int start_row_img,int start_col_img,int window_size,float value)
+{
+    for (int start_row_window = 0 ; start_row_window < window_size/2 ; start_row_window++)
+    {
+        int opposite_row = window_size - start_row_window - 1;
+
+        for (int start_col_window = 0; start_col_window < window_size/2 ; start_col_window++)
+        {
+            int opposite_col = window_size - start_col_window - 1;
+
+            float image_value_1 = get_pixel(img,start_col_img + start_col_window,start_row_img + start_row_window,ch);
+
+            float image_value_2 = get_pixel(img,start_col_img + opposite_col,start_row_img + start_row_window,ch);
+
+            float image_value_3 = get_pixel(img,start_col_img + start_col_window,start_row_img + opposite_row,ch);
+
+            float image_value_4 = get_pixel(img,start_col_img + opposite_col,start_row_img + opposite_row,ch);
+
+            float max_neighboor = four_max_value(image_value_1,image_value_2,image_value_3,image_value_4);
+
+            if(max_neighboor > value)
+            {
+                return -999999;
+            }
+
+        }
+    }
+    if(window_size % 2 == 1)
+    {
+        int window_center_row = window_size/2;
+
+        for (int start_col_window = 0; start_col_window < window_size/2 ; start_col_window++)
+        {
+            int opposite_col = window_size - start_col_window - 1;
+
+            float image_value_1 = get_pixel(img,start_col_img + start_col_window,start_row_img + window_center_row,ch);
+
+            float image_value_2 = get_pixel(img,start_col_img + opposite_col,start_row_img + window_center_row,ch);
+
+            if(image_value_1 > value || image_value_2 > value)
+            {
+                return -999999;
+            }
+
+        }
+
+    }
+    if(window_size % 2 == 1)
+    {
+        int window_center_col = window_size/2;
+
+        for (int start_row_window = 0; start_row_window < window_size/2 ; start_row_window++)
+        {
+            int opposite_row = window_size - start_row_window - 1;
+
+            float image_value_1 = get_pixel(img,start_col_img + window_center_col,start_row_img + start_row_window,ch);
+
+            float image_value_2 = get_pixel(img,start_col_img + window_center_col,start_row_img + opposite_row,ch);
+
+            if(image_value_1 > value || image_value_2 > value)
+            {
+                return -999999;
+            }
+        }
+    }
+
+    return value;
+}
+
 // Perform non-max supression on an image of feature responses.
 // image im: 1-channel image of feature responses.
 // int w: distance to look for larger responses.
@@ -208,14 +278,41 @@ image nms_image(image im, int w)
     //     for neighbors within w:
     //         if neighbor response greater than pixel response:
     //             set response to be very low (I use -999999 [why not 0??])
-    for(int row = 0 ; row < im.h ; row++)
+    int window_size = 2*w + 1;
+    for(int row = 0 ; row < r.h ; row++)
     {
-        for(int col = 0 ; col < im.w ; col++)
+        int start_row_img = row - w;
+        for(int col = 0; col < r.w ; col++)
         {
-
+            int start_col_img = col - w;
+            for(int ch = 0 ; ch < r.c ; ch++)
+            {
+                float pixel_value  = get_pixel(r,col,row,ch);
+                set_pixel(r,col,row,ch,check_window_maximum(r,ch,start_row_img,start_col_img,window_size,pixel_value));
+            }
         }
     }
     return r;
+}
+
+int count_responses(image img,float thresh)
+{
+    int count = 0;
+    for(int row = 0 ; row < img.h ; row++)
+    {
+        for(int col = 0; col < img.w ; col++)
+        {
+            for(int ch = 0 ; ch < img.c ; ch++)
+            {
+                if(get_pixel(img,col,row,ch) > thresh)
+                {
+                    count++;
+                }
+            }
+        }
+    }
+
+    return count;
 }
 
 // Perform harris corner detection and extract features from the corners.
@@ -238,13 +335,25 @@ descriptor *harris_corner_detector(image im, float sigma, float thresh, int nms,
 
 
     //TODO: count number of responses over threshold
-    int count = 1; // change this
+    int count = count_responses(Rnms,thresh); // change this
 
     
     *n = count; // <- set *n equal to number of corners in image.
     descriptor *d = calloc(count, sizeof(descriptor));
     //TODO: fill in array *d with descriptors of corners, use describe_index.
-
+    int index  = 0;
+    for(int i = 0 ; i < count ; i++)
+    {
+        for(; index < Rnms.h*Rnms.w*Rnms.c ; index++)
+        {
+            if(Rnms.data[index] > thresh)
+            {
+               d[i] = describe_index(Rnms,index);
+               index++;
+               break;
+            }
+        }
+    }
 
     free_image(S);
     free_image(R);
