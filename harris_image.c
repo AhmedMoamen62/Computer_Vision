@@ -4,7 +4,6 @@
 #include <math.h>
 #include <assert.h>
 #include "image.h"
-#include "image_math.h"
 #include "matrix.h"
 #include <time.h>
 

@@ -40,6 +40,14 @@ typedef struct{
 } match;
 
 
+// Maximum and Minimum
+int three_max(float a, float b, float c);
+int three_min(float a, float b, float c);
+int four_max(float a, float b, float c, float d);
+int four_min(float a, float b, float c, float d);
+float four_max_value(float a, float b, float c, float d);
+float four_min_value(float a, float b, float c, float d);
+
 // Basic operations
 int clip_axis(int axis,int min,int max);
 float get_pixel(image im, int x, int y, int c);

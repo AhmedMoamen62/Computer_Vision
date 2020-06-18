@@ -7,7 +7,6 @@ SOURCES += \
         args.c \
         filter_image.c \
         harris_image.c \
-        image_math.c \
         load_image.c \
         main.c \
         matrix.c \

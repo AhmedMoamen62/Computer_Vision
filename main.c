@@ -14,10 +14,11 @@ int main()
     image matches = find_and_draw_matches(img_1,img_2,2,50,3);
     save_image(matches,"matches_edit");
 
+    image matches_edit = load_image("matches_edit.jpg");
     image matches_original = load_image("figs/matches.jpg");
-    matches = load_image("matches_edit.jpg");
-    image sub = sub_image(matches,matches_original);
-    //clamp_image(sub);
+
+    image sub = sub_image(matches_edit,matches_original);
+    clamp_image(sub);
 
     save_image(sub,"editable_dog");
 

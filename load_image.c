@@ -1,7 +1,6 @@
 // You probably don't want to edit this file
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "image.h"
 
 image make_empty_image(int w, int h, int c)

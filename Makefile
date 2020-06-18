@@ -55,7 +55,6 @@ OBJECTS_DIR   = ./
 SOURCES       = args.c \
 		filter_image.c \
 		harris_image.c \
-		image_math.c \
 		load_image.c \
 		main.c \
 		matrix.c \
@@ -66,7 +65,6 @@ SOURCES       = args.c \
 OBJECTS       = args.o \
 		filter_image.o \
 		harris_image.o \
-		image_math.o \
 		load_image.o \
 		main.o \
 		matrix.o \
@@ -264,6 +262,7 @@ DIST          = /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/spec_pre.prf
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/qt_config.prf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/toolchain.prf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -286,7 +285,6 @@ DIST          = /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/spec_pre.prf
 		test.h args.c \
 		filter_image.c \
 		harris_image.c \
-		image_math.c \
 		load_image.c \
 		main.c \
 		matrix.c \
@@ -495,6 +493,7 @@ Makefile: CV_hw.pro /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/linux-g++/qmake.c
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/qt_config.prf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/toolchain.prf \
 		/home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -700,6 +699,7 @@ Makefile: CV_hw.pro /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/linux-g++/qmake.c
 /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/qt_config.prf:
 /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/linux-g++/qmake.conf:
 /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/toolchain.prf:
 /home/ahmedmoamen/Qt/5.14.1/gcc_64/mkspecs/features/default_pre.prf:
@@ -765,12 +765,8 @@ filter_image.o: filter_image.c image.h \
 	$(CC) -c $(CFLAGS) $(INCPATH) -o filter_image.o filter_image.c
 
 harris_image.o: harris_image.c image.h \
-		matrix.h \
-		image_math.h
+		matrix.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o harris_image.o harris_image.c
-
-image_math.o: image_math.c image_math.h
-	$(CC) -c $(CFLAGS) $(INCPATH) -o image_math.o image_math.c
 
 load_image.o: load_image.c image.h \
 		matrix.h \
@@ -792,13 +788,11 @@ panorama_image.o: panorama_image.c image.h \
 	$(CC) -c $(CFLAGS) $(INCPATH) -o panorama_image.o panorama_image.c
 
 process_image.o: process_image.c image.h \
-		matrix.h \
-		image_math.h
+		matrix.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o process_image.o process_image.c
 
 resize_image.o: resize_image.c image.h \
-		matrix.h \
-		image_math.h
+		matrix.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o resize_image.o resize_image.c
 
 test.o: test.c matrix.h \
