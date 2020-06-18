@@ -8,14 +8,28 @@
 int main()
 {
     //run_tests();
-    image img = load_image("data/Rainier1.png");
-    save_image(img,"jpg_to_png");
-    image convert = load_image("jpg_to_png.jpg");
-    detect_and_draw_corners(convert,2,50,3);
-    image corner = load_image("figs/corners.jpg");
-    image sub = sub_image(convert,corner);
-    clamp_image(sub);
-    save_image(convert,"editable_dog");
+
+    image img_1 = load_image("data/Rainier1.png");
+    image img_2 = load_image("data/Rainier2.png");
+    image matches = find_and_draw_matches(img_1,img_2,2,50,3);
+    save_image(matches,"matches_edit");
+
+    image matches_original = load_image("figs/matches.jpg");
+    matches = load_image("matches_edit.jpg");
+    image sub = sub_image(matches,matches_original);
+    //clamp_image(sub);
+
+    save_image(sub,"editable_dog");
+
+//    image img = load_image("data/Rainier1.png");
+//    detect_and_draw_corners(img,2,50,3);
+//    save_image(img,"jpg_to_png");
+//    image convert = load_image("jpg_to_png.jpg");
+//    image corner = load_image("figs/corners.jpg");
+//    image sub = sub_image(convert,corner);
+//    //clamp_image(sub);
+//    save_image(sub,"editable_dog");
+
 //    clock_t start, end;
 //    float cpu_time_used;
 

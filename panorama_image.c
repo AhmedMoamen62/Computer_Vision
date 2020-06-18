@@ -63,8 +63,8 @@ image draw_matches(image a, image b, match *matches, int n, int inliers)
     image both = both_images(a, b);
     int i,j;
     for(i = 0; i < n; ++i){
-        int bx = matches[i].p.x; 
-        int ex = matches[i].q.x; 
+        int bx = matches[i].p.x;
+        int ex = matches[i].q.x;
         int by = matches[i].p.y;
         int ey = matches[i].q.y;
         for(j = bx; j < ex + a.w; ++j){
@@ -117,8 +117,16 @@ image find_and_draw_matches(image a, image b, float sigma, float thresh, int nms
 // returns: l1 distance between arrays (sum of absolute differences).
 float l1_distance(float *a, float *b, int n)
 {
+
     // TODO: return the correct number.
-    return 0;
+    float distance  = 0;
+
+    for(int i = 0 ; i < n ; i++)
+    {
+        distance += fabsf(a[i] - b[i]);
+    }
+
+    return distance;
 }
 
 // Finds best matches between descriptors of two images.
@@ -136,22 +144,62 @@ match *match_descriptors(descriptor *a, int an, descriptor *b, int bn, int *mn)
     match *m = calloc(an, sizeof(match));
     for(j = 0; j < an; ++j){
         // TODO: for every descriptor in a, find best match in b.
+        float min_distance = l1_distance(a[j].data,b[0].data,a[j].n);
+        int best_index = 0;
+        for(i = 1; i < bn; i++)
+        {
+            float current_distance = l1_distance(a[j].data,b[i].data,a[j].n);
+            if(current_distance < min_distance)
+            {
+                min_distance = current_distance;
+                best_index = i;
+            }
+        }
         // record ai as the index in *a and bi as the index in *b.
-        int bind = 0; // <- find the best match
+        int bind = best_index; // <- find the best match
         m[j].ai = j;
         m[j].bi = bind; // <- should be index in b.
         m[j].p = a[j].p;
         m[j].q = b[bind].p;
-        m[j].distance = 0; // <- should be the smallest L1 distance!
+        m[j].distance = min_distance; // <- should be the smallest L1 distance!
     }
 
-    int count = 0;
+    int count = *mn;
     int *seen = calloc(bn, sizeof(int));
+    for(i = 0; i < *mn; i++)
+    {
+        seen[i] = 0;
+    }
+
     // TODO: we want matches to be injective (one-to-one).
     // Sort matches based on distance using match_compare and qsort.
+    qsort(m,*mn,sizeof(match),match_compare);
     // Then throw out matches to the same element in b. Use seen to keep track.
     // Each point should only be a part of one match.
     // Some points will not be in a match.
+    for(i = 0; i < *mn; i++)
+    {
+        seen[m[i].bi]++;
+    }
+    for(i = 0; i < *mn; i++)
+    {
+        if(seen[m[i].bi] > 1)
+        {
+            for(int k = i+1; k < count; k++)
+            {
+                if(m[i].bi == m[k].bi)
+                {
+                    for(j = k; j < count - 1; j++)
+                    {
+                        match temp_match = m[j];
+                        m[j] = m[j+1];
+                        m[j+1] = temp_match;
+                    }
+                    count--;
+                }
+            }
+        }
+    }
     // In practice just bring good matches to front of list, set *mn.
     *mn = count;
     free(seen);
@@ -227,7 +275,7 @@ matrix compute_homography(match *matches, int n)
 
     }
     matrix a = solve_system(M, b);
-    free_matrix(M); free_matrix(b); 
+    free_matrix(M); free_matrix(b);
 
     // If a solution can't be found, return empty matrix;
     matrix none = {0};
