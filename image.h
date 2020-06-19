@@ -113,6 +113,7 @@ void mark_corners(image im, descriptor *d, int n);
 image find_and_draw_matches(image a, image b, float sigma, float thresh, int nms);
 void detect_and_draw_corners(image im, float sigma, float thresh, int nms);
 int model_inliers(matrix H, match *m, int n, float thresh);
+void swap_matches(match *m, int i, int j);
 image combine_images(image a, image b, matrix H);
 match *match_descriptors(descriptor *a, int an, descriptor *b, int bn, int *mn);
 descriptor *harris_corner_detector(image im, float sigma, float thresh, int nms, int *n);

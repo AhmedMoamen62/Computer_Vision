@@ -19,6 +19,7 @@ int main()
 
     image sub = sub_image(matches_edit,matches_original);
     clamp_image(sub);
+    image panorama = panorama_image(img_1,img_2,2,50,3,2,10000,30);
 
     save_image(sub,"editable_dog");
 
@@ -140,7 +141,7 @@ int main()
     //        }
     //    }
 
-    system("shotwell editable_dog.jpg");
+    system("shotwell inliers.jpg");
 
     return 0;
 }
