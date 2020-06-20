@@ -377,13 +377,11 @@ matrix RANSAC(match *m, int n, float thresh, int k, int cutoff)
                 Hb = H;
                 if(inlier_count > cutoff)
                 {
-                    free_matrix(H);
                     return Hb;
                 }
             }
         }
     }
-    free_matrix(H);
     return Hb;
 }
 
@@ -393,6 +391,10 @@ matrix RANSAC(match *m, int n, float thresh, int k, int cutoff)
 // returns: combined image stitched together.
 image combine_images(image a, image b, matrix H)
 {
+
+    // To get image b corners in image a, inverse the Homography first
+    // ( x2 ---> b && and x2(b) = H x1(a) so x1(a) = H^-1 x2(b) )
+    // Last step (add if i get x2(b), sub if i get x1(a)) the dx and dy to combine the coordinates image c
     matrix Hinv = matrix_invert(H);
 
     // Project the corners of image b into image a coordinates.
@@ -409,10 +411,10 @@ image combine_images(image a, image b, matrix H)
     topleft.y = MIN(c1.y, MIN(c2.y, MIN(c3.y, c4.y)));
 
     // Find how big our new image should be and the offsets from image a.
-    int dx = MIN(0, topleft.x);
-    int dy = MIN(0, topleft.y);
-    int w = MAX(a.w, botright.x) - dx;
-    int h = MAX(a.h, botright.y) - dy;
+    int dx = MIN(0, topleft.x); // to check if the projected image x is inside the old or has outside part
+    int dy = MIN(0, topleft.y); // to check if the projected image y is inside the old or has outside part
+    int w = MAX(a.w, botright.x) - dx; // get the maximum of the 2 images then subtract from dx as it will be zero or -ve to be added to the total width
+    int h = MAX(a.h, botright.y) - dy; // get the maximum of the 2 images then subtract from dy as it will be zero or -ve to be added to the total height
 
     // Can disable this if you are making very big panoramas.
     // Usually this means there was an error in calculating H.
@@ -425,11 +427,11 @@ image combine_images(image a, image b, matrix H)
     image c = make_image(w, h, a.c);
 
     // Paste image a into the new image offset by dx and dy.
-    for(k = 0; k < a.c; ++k){
-        for(j = 0; j < a.h; ++j){
-            for(i = 0; i < a.w; ++i){
+    for(k = 0; k < a.c; ++k){ // channel
+        for(j = 0; j < a.h; ++j){ // row
+            for(i = 0; i < a.w; ++i){ // column
                 // TODO: fill in.
-                set_pixel(c,i + dx,h + dy,k,get_pixel(a,i,h,k));
+                set_pixel(c,i - dx,j - dy,k,get_pixel(a,i,j,k));
             }
         }
     }
@@ -439,6 +441,24 @@ image combine_images(image a, image b, matrix H)
     // and see if their projection from a coordinates to b coordinates falls
     // inside of the bounds of image b. If so, use bilinear interpolation to
     // estimate the value of b at that projection, then fill in image c.
+
+    // image_a --> abslute point in image a , image_b --> abslute point in image b
+    point image_a,image_b;
+
+    for(i = 0; i < h; ++i){ // row
+        for(j = 0; j < w; ++j){ // col
+            image_a = make_point(j + dx,i + dy);
+            image_b = project_point(H,image_a);
+            if(image_b.x >= 0 && image_b.x < b.w && image_b.y >=0 && image_b.y < b.h)
+            {
+                for(k = 0; k < b.c; ++k){ // channel
+                    // TODO: fill in.
+                    float interpolated_value = bilinear_interpolate(b,image_b.x,image_b.y,k);
+                    set_pixel(c,j,i,k,interpolated_value);
+                }
+            }
+        }
+    }
 
     return c;
 }
@@ -468,7 +488,7 @@ image panorama_image(image a, image b, float sigma, float thresh, int nms, float
     // Run RANSAC to find the homography
     matrix H = RANSAC(m, mn, inlier_thresh, iters, cutoff);
 
-    if(1){
+    if(0){
         // Mark corners and matches between images
         mark_corners(a, ad, an);
         mark_corners(b, bd, bn);
@@ -493,5 +513,27 @@ image cylindrical_project(image im, float f)
 {
     //TODO: project image onto a cylinder
     image c = copy_image(im);
+
+    int center_y = im.h/2;
+    int center_x = im.w/2;
+
+
+    for(int row = 0 ; row < im.h ; row++)
+    {
+        float h = (row - center_y)/f;
+        for(int col = 0 ; col < im.w ; col++)
+        {
+            float theta = (col - center_x)/f;
+
+            int x = f*tanf(theta) + center_x;
+            int y = (f*h)/cosf(theta) + center_y;
+
+            for(int ch = 0 ; ch < im.c ; ch++)
+            {
+
+                set_pixel(c,x,y,ch,get_pixel(im,col,row,ch));
+            }
+        }
+    }
     return c;
 }
