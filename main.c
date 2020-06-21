@@ -9,35 +9,49 @@ int main()
 {
     //run_tests();
 
-    image im1 = load_image("data/field1.jpg");
-    image im2 = load_image("data/field2.jpg");
-    image im3 = load_image("data/field3.jpg");
-    image im4 = load_image("data/field4.jpg");
-    image im5 = load_image("data/field5.jpg");
-    image im6 = load_image("data/field6.jpg");
-    image im7 = load_image("data/field7.jpg");
-    image im8 = load_image("data/field8.jpg");
+//    image im1 = load_image("data/field1.jpg");
+//    image im2 = load_image("data/field2.jpg");
+//    image im3 = load_image("data/field3.jpg");
+//    image im4 = load_image("data/field4.jpg");
+//    image im5 = load_image("data/field5.jpg");
+//    image im6 = load_image("data/field6.jpg");
+//    image im7 = load_image("data/field7.jpg");
+//    image im8 = load_image("data/field8.jpg");
 
-    im1 = cylindrical_project(im1, 1200);
-    im2 = cylindrical_project(im2, 1200);
-    im3 = cylindrical_project(im3, 1200);
-    im4 = cylindrical_project(im4, 1200);
-    im5 = cylindrical_project(im5, 1200);
-    im6 = cylindrical_project(im6, 1200);
-    im7 = cylindrical_project(im7, 1200);
-    im8 = cylindrical_project(im8, 1200);
-    save_image(im1, "cylindrical_projection");
+//    im1 = cylindrical_project(im1, 1200);
+//    im2 = cylindrical_project(im2, 1200);
+//    im3 = cylindrical_project(im3, 1200);
+//    im4 = cylindrical_project(im4, 1200);
+//    im5 = cylindrical_project(im5, 1200);
+//    im6 = cylindrical_project(im6, 1200);
+//    im7 = cylindrical_project(im7, 1200);
+//    im8 = cylindrical_project(im8, 1200);
+//    save_image(im1, "cylindrical_projection");
 
-    image pan = panorama_image(im5, im6,2,2,3,3,50000,30);
-    save_image(pan, "field_panorama_1");
-    image pan2 = panorama_image(pan, im7,2,2,3,3,50000,30);
-    save_image(pan2, "field_panorama_2");
-    image pan3 = panorama_image(pan2, im8,2,2,3,3,50000,30);
-    save_image(pan3, "field_panorama_3");
-    image pan4 = panorama_image(pan3, im4,2,2,3,3,50000,30);
-    save_image(pan4, "field_panorama_4");
-    image pan5 = panorama_image(pan4, im3,2,2,3,3,50000,30);
-    save_image(pan5, "field_panorama_5");
+//    image pan = panorama_image(im5, im6,2,2,3,3,50000,30);
+//    save_image(pan, "field_panorama_1");
+//    image pan2 = panorama_image(pan, im7,2,2,3,3,50000,30);
+//    save_image(pan2, "field_panorama_2");
+//    image pan3 = panorama_image(pan2, im8,2,2,3,3,50000,30);
+//    save_image(pan3, "field_panorama_3");
+//    image pan4 = panorama_image(pan3, im4,2,2,3,3,50000,30);
+//    save_image(pan4, "field_panorama_4");
+//    image pan5 = panorama_image(pan4, im3,2,2,3,3,50000,30);
+//    save_image(pan5, "field_panorama_5");
+
+//    image im1 = load_image("data/sun1.jpg");
+//    image im2 = load_image("data/sun2.jpg");
+//    image im3 = load_image("data/sun3.jpg");
+//    image im4 = load_image("data/sun4.jpg");
+//    image im5 = load_image("data/sun5.jpg");
+//    image pan = panorama_image(im1,im2,2,5,3,2,10000,30);
+//    save_image(pan, "rainier_panorama_1");
+//    image pan2 = panorama_image(pan,im3,2,5,3,2,10000,30);
+//    save_image(pan2, "rainier_panorama_2");
+//    image pan3 = panorama_image(pan2,im4,2,5,3,2,10000,30);
+//    save_image(pan3, "rainier_panorama_3");
+//    image pan4 = panorama_image(pan3,im5,2,5,3,2,10000,30);
+//    save_image(pan4, "rainier_panorama_4");
 
 //    image im1 = load_image("data/helens1.jpg");
 //    image im2 = load_image("data/helens2.jpg");

@@ -119,5 +119,23 @@ match *match_descriptors(descriptor *a, int an, descriptor *b, int bn, int *mn);
 descriptor *harris_corner_detector(image im, float sigma, float thresh, int nms, int *n);
 image panorama_image(image a, image b, float sigma, float thresh, int nms, float inlier_thresh, int iters, int cutoff);
 
+// Optical Flow
+image optical_flow_images(image im, image prev, int smooth, int stride);
+void optical_flow_webcam(int smooth, int stride, int div);
+void draw_flow(image im, image v, float scale);
+
+#ifndef __cplusplus
+    #ifdef OPENCV
+        #include "opencv2/highgui/highgui_c.h"
+        #include "opencv2/imgproc/imgproc_c.h"
+        #include "opencv2/core/version.hpp"
+        #if CV_MAJOR_VERSION == 3
+            #include "opencv2/videoio/videoio_c.h"
+            #include "opencv2/imgcodecs/imgcodecs_c.h"
+        #endif
+        image get_image_from_stream(CvCapture *cap);
+        int show_image(image im, const char *name, int ms);
+    #endif
 #endif
 
+#endif

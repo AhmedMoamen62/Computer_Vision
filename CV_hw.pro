@@ -6,6 +6,7 @@ CONFIG -= qt
 SOURCES += \
         args.c \
         filter_image.c \
+        flow_image.c \
         harris_image.c \
         load_image.c \
         main.c \

@@ -1,6 +1,7 @@
 // You probably don't want to edit this file
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "image.h"
 
 image make_empty_image(int w, int h, int c)
@@ -99,3 +100,81 @@ void free_image(image im)
 {
     free(im.data);
 }
+
+#ifdef OPENCV
+
+void rgbgr_image(image im)
+{
+    int i;
+    for(i = 0; i < im.w*im.h; ++i){
+        float swap = im.data[i];
+        im.data[i] = im.data[i+im.w*im.h*2];
+        im.data[i+im.w*im.h*2] = swap;
+    }
+}
+
+void ipl_into_image(IplImage* src, image im)
+{
+    unsigned char *data = (unsigned char *)src->imageData;
+    int h = src->height;
+    int w = src->width;
+    int c = src->nChannels;
+    int step = src->widthStep;
+    int i, j, k;
+
+    for(i = 0; i < h; ++i){
+        for(k= 0; k < c; ++k){
+            for(j = 0; j < w; ++j){
+                im.data[k*w*h + i*w + j] = data[i*step + j*c + k]/255.;
+            }
+        }
+    }
+}
+
+image ipl_to_image(IplImage* src)
+{
+    int h = src->height;
+    int w = src->width;
+    int c = src->nChannels;
+    image out = make_image(w, h, c);
+    ipl_into_image(src, out);
+    return out;
+}
+
+image get_image_from_stream(CvCapture *cap)
+{
+    IplImage* src = cvQueryFrame(cap);
+    if (!src) return make_empty_image(0,0,0);
+    image im = ipl_to_image(src);
+    rgbgr_image(im);
+    return im;
+}
+
+int show_image(image im, const char *name, int ms)
+{
+    image p = copy_image(im);
+    IplImage *disp = cvCreateImage(cvSize(p.w,p.h), IPL_DEPTH_8U, p.c);
+    clamp_image(p);
+
+    int x,y,k;
+    if(p.c == 3) rgbgr_image(p);
+
+    char buff[256];
+    sprintf(buff, "%s", name);
+
+    int step = disp->widthStep;
+    cvNamedWindow(buff, CV_WINDOW_NORMAL); 
+    for(y = 0; y < p.h; ++y){
+        for(x = 0; x < p.w; ++x){
+            for(k= 0; k < p.c; ++k){
+                disp->imageData[y*step + x*p.c + k] = (unsigned char)(get_pixel(p,x,y,k)*255);
+            }
+        }
+    }
+    cvShowImage(buff, disp);
+    free_image(p);
+    cvReleaseImage(&disp);
+    return cvWaitKey(ms);
+}
+
+#endif
