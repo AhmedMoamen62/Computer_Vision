@@ -33,18 +33,22 @@ point make_point(float x, float y)
 // returns: image with both a and b side-by-side.
 image both_images(image a, image b)
 {
+    // make image with the total width of the two images, height and channel with the highest one
     image both = make_image(a.w + b.w, a.h > b.h ? a.h : b.h, a.c > b.c ? a.c : b.c);
     int i,j,k;
-    for(k = 0; k < a.c; ++k){
-        for(j = 0; j < a.h; ++j){
-            for(i = 0; i < a.w; ++i){
+    // fill the big image with image a first
+    for(k = 0; k < a.c; ++k){ // channel
+        for(j = 0; j < a.h; ++j){ // row
+            for(i = 0; i < a.w; ++i){ // column
                 set_pixel(both, i, j, k, get_pixel(a, i, j, k));
             }
         }
     }
-    for(k = 0; k < b.c; ++k){
-        for(j = 0; j < b.h; ++j){
-            for(i = 0; i < b.w; ++i){
+    // fill the big image with image b second
+    for(k = 0; k < b.c; ++k){ // channel
+        for(j = 0; j < b.h; ++j){ // row
+            for(i = 0; i < b.w; ++i){ // column
+                // start drawing from the last column in image a
                 set_pixel(both, i+a.w, j, k, get_pixel(b, i, j, k));
             }
         }
@@ -60,15 +64,24 @@ image both_images(image a, image b)
 // returns: image with matches drawn between a and b on same canvas.
 image draw_matches(image a, image b, match *matches, int n, int inliers)
 {
+    // to combine the two images
     image both = both_images(a, b);
     int i,j;
+    // iterate over number of matches
     for(i = 0; i < n; ++i){
+        // get th points in images to draw the matches
         int bx = matches[i].p.x;
         int ex = matches[i].q.x;
         int by = matches[i].p.y;
         int ey = matches[i].q.y;
+        // iterate over the line x coordinate which connect the match
+        // starting from first point bx , ending the second point in the combined image (ex + a.w)
         for(j = bx; j < ex + a.w; ++j){
+            // calculating the y coordinate in the combined image, get the line equation
+            // (ey - by)/(ex+a.w - bx) = (y - by)/(j - bx), y = r
             int r = (float)(j-bx)/(ex+a.w - bx)*(ey - by) + by;
+            // draw inliers with green line and outliers with red line
+            // the inliers matches is sorted in the first in matches array from model_inlier
             set_pixel(both, j, r, 0, i<inliers?0:1);
             set_pixel(both, j, r, 1, i<inliers?1:0);
             set_pixel(both, j, r, 2, 0);
@@ -82,7 +95,9 @@ image draw_matches(image a, image b, match *matches, int n, int inliers)
 // matches *
 image draw_inliers(image a, image b, matrix H, match *m, int n, float thresh)
 {
+    // get number of inliers (green line)
     int inliers = model_inliers(H, m, n, thresh);
+    // n number of matches, outliers = n - inliers
     image lines = draw_matches(a, b, m, n, inliers);
     return lines;
 }
@@ -369,19 +384,20 @@ matrix RANSAC(match *m, int n, float thresh, int k, int cutoff)
         if(inlier_count > best)
         {
             best = inlier_count;
-            H = compute_homography(m,inlier_count);
-            if(H.data)
+            Hb = compute_homography(m,inlier_count);
+            if(Hb.data)
             {
-                inlier_count = model_inliers(H,m,n,thresh);
+                inlier_count = model_inliers(Hb,m,n,thresh);
                 best = inlier_count;
-                Hb = H;
                 if(inlier_count > cutoff)
                 {
+                    free_matrix(H);
                     return Hb;
                 }
             }
         }
     }
+    free_matrix(H);
     return Hb;
 }
 
@@ -512,26 +528,32 @@ image panorama_image(image a, image b, float sigma, float thresh, int nms, float
 image cylindrical_project(image im, float f)
 {
     //TODO: project image onto a cylinder
-    image c = copy_image(im);
 
-    int center_y = im.h/2;
-    int center_x = im.w/2;
+    int xc = im.w/2;
+    int yc = im.h/2;
 
+    // get the width of the flattened image
+    // at x = 2xc --> theta = (2xc - xc)/f = xc/f
+    int imageC_width = 2*f*atan2f(xc,f);
 
-    for(int row = 0 ; row < im.h ; row++)
+    image c = make_image(imageC_width,im.h,im.c);
+    int center_x = c.w/2;
+    int center_y = c.h/2;
+
+    for(int row = -center_y ; row < center_y ; row++)
     {
-        float h = (row - center_y)/f;
-        for(int col = 0 ; col < im.w ; col++)
+        float h = row/f;
+        for(int col = -center_x ; col < center_x ; col++)
         {
-            float theta = (col - center_x)/f;
+            float theta = col/f;
 
-            int x = f*tanf(theta) + center_x;
-            int y = (f*h)/cosf(theta) + center_y;
+            float x = f*tanf(theta) + xc;
+            float y = (f*h)/cosf(theta) + yc;
 
-            for(int ch = 0 ; ch < im.c ; ch++)
+            for(int ch = 0 ; ch < c.c ; ch++)
             {
-
-                set_pixel(c,x,y,ch,get_pixel(im,col,row,ch));
+                float interpolated_value = bilinear_interpolate(im,x,y,ch);
+                set_pixel(c,col + center_x,row + center_y,ch,interpolated_value);
             }
         }
     }

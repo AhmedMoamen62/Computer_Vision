@@ -39,23 +39,40 @@ int main()
     image pan5 = panorama_image(pan4, im3,2,2,3,3,50000,30);
     save_image(pan5, "field_panorama_5");
 
+//    image im1 = load_image("data/helens1.jpg");
+//    image im2 = load_image("data/helens2.jpg");
+//    image im3 = load_image("data/helens3.jpg");
+//    image im4 = load_image("data/helens4.jpg");
+//    image im5 = load_image("data/helens5.jpg");
+//    image im6 = load_image("data/helens6.jpg");
+//    image pan = panorama_image(im1,im2,2,5,3,2,10000,30);
+//    save_image(pan, "rainier_panorama_1");
+//    image pan2 = panorama_image(pan,im3,2,5,3,2,10000,30);
+//    save_image(pan2, "rainier_panorama_2");
+//    image pan3 = panorama_image(pan2,im4,2,5,3,2,10000,30);
+//    save_image(pan3, "rainier_panorama_3");
+//    image pan4 = panorama_image(pan3,im5,2,5,3,2,10000,30);
+//    save_image(pan4, "rainier_panorama_4");
+//    image pan5 = panorama_image(pan4,im6,2,5,3,2,10000,30);
+//    save_image(pan5, "rainier_panorama_5");
 
-    //    image im1 = load_image("data/Rainier1.png");
-    //    image im2 = load_image("data/Rainier2.png");
-    //    image im3 = load_image("data/Rainier3.png");
-    //    image im4 = load_image("data/Rainier4.png");
-    //    image im5 = load_image("data/Rainier5.png");
-    //    image im6 = load_image("data/Rainier6.png");
-    //    image pan = panorama_image(im1, im2,2,5,3,2,10000,30);
-    //    save_image(pan, "rainier_panorama_1");
-    //    image pan2 = panorama_image(pan, im5,2,5,3,2,10000,30);
-    //    save_image(pan2, "rainier_panorama_2");
-    //    image pan3 = panorama_image(pan2, im6,2,5,3,2,10000,30);
-    //    save_image(pan3, "rainier_panorama_3");
-    //    image pan4 = panorama_image(pan3, im3,2,5,3,2,10000,30);
-    //    save_image(pan4, "rainier_panorama_4");
-    //    image pan5 = panorama_image(pan4, im4,2,5,3,2,10000,30);
-    //    save_image(pan5, "rainier_panorama_5");
+
+//        image im1 = load_image("data/Rainier1.png");
+//        image im2 = load_image("data/Rainier2.png");
+//        image im3 = load_image("data/Rainier3.png");
+//        image im4 = load_image("data/Rainier4.png");
+//        image im5 = load_image("data/Rainier5.png");
+//        image im6 = load_image("data/Rainier6.png");
+//        image pan = panorama_image(im1, im2,2,5,3,2,10000,30);
+//        save_image(pan, "rainier_panorama_1");
+//        image pan2 = panorama_image(pan, im5,2,5,3,2,10000,30);
+//        save_image(pan2, "rainier_panorama_2");
+//        image pan3 = panorama_image(pan2, im6,2,5,3,2,10000,30);
+//        save_image(pan3, "rainier_panorama_3");
+//        image pan4 = panorama_image(pan3, im3,2,5,3,2,10000,30);
+//        save_image(pan4, "rainier_panorama_4");
+//        image pan5 = panorama_image(pan4, im4,2,5,3,2,10000,30);
+//        save_image(pan5, "rainier_panorama_5");
 
     //    image img_1 = load_image("data/Rainier1.png");
     //    image img_2 = load_image("data/Rainier2.png");

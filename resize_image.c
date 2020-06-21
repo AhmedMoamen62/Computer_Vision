@@ -57,6 +57,11 @@ float bilinear_interpolate(image im, float x, float y, int c)
     float A3 = (x - x_left)*(y_bottom - y);
     float A4 = (x_right - x)*(y_bottom - y);
 
+    if(A1 == 0 && A2 == 0 && A3 == 0 && A4 == 0)
+    {
+        return get_pixel(im,x,y,c);
+    }
+
     pixel_val = (get_pixel(im,x_right,y_top,c)*A3)
               + (get_pixel(im,x_left,y_top,c)*A4)
               + (get_pixel(im,x_right,y_bottom,c)*A1)
