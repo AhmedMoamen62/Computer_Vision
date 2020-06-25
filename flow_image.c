@@ -48,6 +48,22 @@ image make_integral_image(image im)
 {
     image integ = make_image(im.w, im.h, im.c);
     // TODO: fill in the integral image
+    for(int row = 0 ; row < integ.h ; row++)
+    {
+        for (int col = 0 ; col < integ.w ; col++)
+        {
+            for (int ch = 0; ch < integ.c ; ch++)
+            {
+                float original_pixel = get_pixel_padding(im,col,row,ch);
+                float left_pixel = get_pixel_padding(integ,col - 1,row,ch);
+                float top_pixel = get_pixel_padding(integ,col,row - 1,ch);
+                float top_left_pixel = get_pixel_padding(integ,col - 1,row - 1,ch);
+
+                float pixel_value = original_pixel + left_pixel + top_pixel - top_left_pixel;
+                set_pixel(integ,col,row,ch,pixel_value);
+            }
+        }
+    }
     return integ;
 }
 
@@ -60,7 +76,29 @@ image box_filter_image(image im, int s)
     int i,j,k;
     image integ = make_integral_image(im);
     image S = make_image(im.w, im.h, im.c);
+    float weight = 1.0/(s*s);
     // TODO: fill in S using the integral image.
+    for(i = 0 ; i < S.h ; i++) // row
+    {
+        int top_row = i - s/2 - 1;
+        int bottom_row = i + s/2;
+        for(j = 0 ; j < S.w ; j++) // column
+        {
+            int left_col = j - s/2 - 1;
+            int right_col = j + s/2;
+            for(k = 0 ; k < S.c ; k++) // channel
+            {
+                float right_bottom = get_pixel(integ,right_col,bottom_row,k);
+                float right_top = get_pixel(integ,right_col,top_row,k);
+                float left_top = get_pixel(integ,left_col,top_row,k);
+                float left_bottom = get_pixel(integ,left_col,bottom_row,k);
+
+                float pixel_value = (right_bottom - right_top + left_top - left_bottom)*weight;
+                set_pixel(S,j,i,k,pixel_value);
+            }
+        }
+    }
+    free_image(integ);
     return S;
 }
 

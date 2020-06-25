@@ -18,6 +18,16 @@ int clip_axis(int axis,int min,int max)
     return axis;
 }
 
+float get_pixel_padding(image im, int x, int y, int c)
+{
+    if(x < 0 || x > im.w - 1 || y < 0 || y > im.h - 1 || c < 0 || c > im.c - 1)
+    {
+        return 0;
+    }
+    int index = im.w*im.h*c + im.w*y + x;
+    return im.data[index];
+}
+
 float get_pixel(image im, int x, int y, int c)
 {
     x = clip_axis(x,0,im.w - 1);

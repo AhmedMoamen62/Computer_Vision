@@ -533,7 +533,9 @@ image cylindrical_project(image im, float f)
     int yc = im.h/2;
 
     // get the width of the flattened image
-    // at x = 2xc --> theta = (2xc - xc)/f = xc/f
+    // at x = 2xc --> 2xc = f*tan(theta) + xc, tan(theta) = xc/f
+    // theta = tan^-1(xc/f) = x/f --> x = f*tan^-1(xc/f)
+    // to get the width = 2*x
     int imageC_width = 2*f*atan2f(xc,f);
 
     image c = make_image(imageC_width,im.h,im.c);

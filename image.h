@@ -50,6 +50,7 @@ float four_min_value(float a, float b, float c, float d);
 
 // Basic operations
 int clip_axis(int axis,int min,int max);
+float get_pixel_padding(image im, int x, int y, int c);
 float get_pixel(image im, int x, int y, int c);
 void set_pixel(image im, int x, int y, int c, float v);
 image copy_image(image im);
@@ -99,6 +100,8 @@ void threshold_image(image im, float thresh);
 image *sobel_image(image im);
 image colorize_sobel(image im);
 image image_transpose(image img);
+image make_integral_image(image im);
+image box_filter_image(image im, int s);
 image smooth_image(image im, float sigma);
 
 // Harris and Stitching
