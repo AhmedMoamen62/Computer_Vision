@@ -110,7 +110,8 @@ image box_filter_image(image im, int s)
 //          3rd channel is IxIy, 4th channel is IxIt, 5th channel is IyIt.
 image time_structure_matrix(image im, image prev, int s)
 {
-    int i;
+    assert(im.h == prev.h && im.w == prev.w && im.c == prev.c);
+
     int converted = 0;
     if(im.c == 3){
         converted = 1;
@@ -120,8 +121,40 @@ image time_structure_matrix(image im, image prev, int s)
 
     // TODO: calculate gradients, structure components, and smooth them
 
+    image S = make_image(im.w,im.h,5);
 
-    image S;
+    image gx = make_gx_filter();
+    image gy = make_gy_filter();
+
+    image img_gx = convolve_image(im,gx,0);
+    image img_gy = convolve_image(im,gy,0);
+
+    for(int row = 0 ; row < S.h; row++)
+    {
+        for(int col = 0 ; col < S.w ; col++)
+        {
+            float It_pixel = get_pixel(prev,col,row,0) - get_pixel(im,col,row,0);
+
+            float channel_1 = get_pixel(img_gx,col,row,0)*get_pixel(img_gx,col,row,0);
+            float channel_2 = get_pixel(img_gy,col,row,0)*get_pixel(img_gy,col,row,0);
+            float channel_3 = get_pixel(img_gx,col,row,0)*get_pixel(img_gy,col,row,0);
+            float channel_4 = get_pixel(img_gx,col,row,0)*It_pixel;
+            float channel_5 = get_pixel(img_gy,col,row,0)*It_pixel;
+
+            set_pixel(S,col,row,0,channel_1);
+            set_pixel(S,col,row,1,channel_2);
+            set_pixel(S,col,row,2,channel_3);
+            set_pixel(S,col,row,3,channel_4);
+            set_pixel(S,col,row,4,channel_5);
+        }
+    }
+
+    S = box_filter_image(S,s);
+
+    free_image(gx);
+    free_image(gy);
+    free_image(img_gx);
+    free_image(img_gy);
 
     if(converted){
         free_image(im); free_image(prev);
@@ -137,6 +170,9 @@ image velocity_image(image S, int stride)
     image v = make_image(S.w/stride, S.h/stride, 3);
     int i, j;
     matrix M = make_matrix(2,2);
+    matrix T = make_matrix(2,1);
+    matrix invert;
+    matrix mul;
     for(j = (stride-1)/2; j < S.h; j += stride){
         for(i = (stride-1)/2; i < S.w; i += stride){
             float Ixx = S.data[i + S.w*j + 0*S.w*S.h];
@@ -149,11 +185,32 @@ image velocity_image(image S, int stride)
             float vx = 0;
             float vy = 0;
 
+            M.data[0][0] = Ixx;
+            M.data[0][1] = Ixy;
+            M.data[1][0] = Ixy;
+            M.data[1][1] = Iyy;
+
+            T.data[0][0] = -Ixt;
+            T.data[1][0] = -Iyt;
+
+            invert = matrix_invert(M);
+
+            if(invert.data)
+            {
+                mul = matrix_mult_matrix(invert,T);
+
+                vx = mul.data[0][0];
+                vy = mul.data[1][0];
+            }
+
             set_pixel(v, i/stride, j/stride, 0, vx);
             set_pixel(v, i/stride, j/stride, 1, vy);
         }
     }
     free_matrix(M);
+    free_matrix(T);
+    free_matrix(invert);
+    free_matrix(mul);
     return v;
 }
 

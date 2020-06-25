@@ -8,9 +8,16 @@
 int main()
 {
     //run_tests();
-    image img = load_image("data/dog.jpg");
-    image box = box_filter_image(img,7);
-    save_image(box,"test_hw");
+
+    image a = load_image("data/dog_a.jpg");
+    image b = load_image("data/dog_b.jpg");
+    image flow = optical_flow_images(b, a, 15, 8);
+    draw_flow(a, flow, 8);
+    save_image(a, "lines");
+
+//    image img = load_image("data/dog.jpg");
+//    image box = box_filter_image(img,7);
+//    save_image(box,"test_hw");
 
     //    image im1 = load_image("data/helens4.jpg");
     //    image im2 = load_image("data/helens5.jpg");
@@ -256,7 +263,7 @@ int main()
     //        }
     //    }
 
-    system("shotwell test_hw.jpg");
+    system("shotwell lines.jpg");
 
     return 0;
 }
