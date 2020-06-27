@@ -15,9 +15,9 @@ int main()
     draw_flow(a, flow, 8);
     save_image(a, "lines");
 
-//    image img = load_image("data/dog.jpg");
-//    image box = box_filter_image(img,7);
-//    save_image(box,"test_hw");
+    //    image img = load_image("data/dog.jpg");
+    //    image box = box_filter_image(img,7);
+    //    save_image(box,"test_hw");
 
     //    image im1 = load_image("data/helens4.jpg");
     //    image im2 = load_image("data/helens5.jpg");
@@ -263,7 +263,7 @@ int main()
     //        }
     //    }
 
-    system("shotwell lines.jpg");
+    //system("shotwell lines.jpg");
 
     return 0;
 }

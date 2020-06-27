@@ -73,33 +73,43 @@ image make_integral_image(image im)
 // returns: smoothed image
 image box_filter_image(image im, int s)
 {
-    int i,j,k;
-    image integ = make_integral_image(im);
-    image S = make_image(im.w, im.h, im.c);
-    float weight = 1.0/(s*s);
-    // TODO: fill in S using the integral image.
-    for(i = 0 ; i < S.h ; i++) // row
+    if(1)
     {
-        int top_row = i - s/2 - 1;
-        int bottom_row = i + s/2;
-        for(j = 0 ; j < S.w ; j++) // column
+        int i,j,k;
+        image integ = make_integral_image(im);
+        image S = make_image(im.w, im.h, im.c);
+        float weight = 1.0/(s*s);
+        // TODO: fill in S using the integral image.
+        for(i = 0 ; i < S.h ; i++) // row
         {
-            int left_col = j - s/2 - 1;
-            int right_col = j + s/2;
-            for(k = 0 ; k < S.c ; k++) // channel
+            int top_row = i - s/2 - 1;
+            int bottom_row = i + s/2;
+            for(j = 0 ; j < S.w ; j++) // column
             {
-                float right_bottom = get_pixel(integ,right_col,bottom_row,k);
-                float right_top = get_pixel(integ,right_col,top_row,k);
-                float left_top = get_pixel(integ,left_col,top_row,k);
-                float left_bottom = get_pixel(integ,left_col,bottom_row,k);
+                int left_col = j - s/2 - 1;
+                int right_col = j + s/2;
+                for(k = 0 ; k < S.c ; k++) // channel
+                {
+                    float right_bottom = get_pixel(integ,right_col,bottom_row,k);
+                    float right_top = get_pixel(integ,right_col,top_row,k);
+                    float left_top = get_pixel(integ,left_col,top_row,k);
+                    float left_bottom = get_pixel(integ,left_col,bottom_row,k);
 
-                float pixel_value = (right_bottom - right_top + left_top - left_bottom)*weight;
-                set_pixel(S,j,i,k,pixel_value);
+                    float pixel_value = (right_bottom - right_top + left_top - left_bottom)*weight;
+                    set_pixel(S,j,i,k,pixel_value);
+                }
             }
         }
+        free_image(integ);
+        return S;
     }
-    free_image(integ);
-    return S;
+    else
+    {
+        image box = make_box_filter(s);
+        image filtered = convolve_image(im,box,1);
+        free_image(box);
+        return filtered;
+    }
 }
 
 // Calculate the time-structure matrix of an image pair.
@@ -113,6 +123,7 @@ image time_structure_matrix(image im, image prev, int s)
     assert(im.h == prev.h && im.w == prev.w && im.c == prev.c);
 
     int converted = 0;
+    // convert the image to gray scale
     if(im.c == 3){
         converted = 1;
         im = rgb_to_grayscale(im);
@@ -123,6 +134,7 @@ image time_structure_matrix(image im, image prev, int s)
 
     image S = make_image(im.w,im.h,5);
 
+    // calculate the Ix, Iy gradients
     image gx = make_gx_filter();
     image gy = make_gy_filter();
 
@@ -133,7 +145,8 @@ image time_structure_matrix(image im, image prev, int s)
     {
         for(int col = 0 ; col < S.w ; col++)
         {
-            float It_pixel = get_pixel(prev,col,row,0) - get_pixel(im,col,row,0);
+            // calculate the It gradient (it's the difference between two images)
+            float It_pixel = get_pixel(im,col,row,0) - get_pixel(prev,col,row,0);
 
             float channel_1 = get_pixel(img_gx,col,row,0)*get_pixel(img_gx,col,row,0);
             float channel_2 = get_pixel(img_gy,col,row,0)*get_pixel(img_gy,col,row,0);
@@ -149,6 +162,7 @@ image time_structure_matrix(image im, image prev, int s)
         }
     }
 
+    // smooth the image with box filter
     S = box_filter_image(S,s);
 
     free_image(gx);
@@ -167,24 +181,26 @@ image time_structure_matrix(image im, image prev, int s)
 // int stride: only calculate subset of pixels for speed
 image velocity_image(image S, int stride)
 {
+    // make imaga downsampled by the stride(step)
     image v = make_image(S.w/stride, S.h/stride, 3);
     int i, j;
     matrix M = make_matrix(2,2);
     matrix T = make_matrix(2,1);
     matrix invert;
     matrix mul;
-    for(j = (stride-1)/2; j < S.h; j += stride){
-        for(i = (stride-1)/2; i < S.w; i += stride){
-            float Ixx = S.data[i + S.w*j + 0*S.w*S.h];
-            float Iyy = S.data[i + S.w*j + 1*S.w*S.h];
-            float Ixy = S.data[i + S.w*j + 2*S.w*S.h];
-            float Ixt = S.data[i + S.w*j + 3*S.w*S.h];
-            float Iyt = S.data[i + S.w*j + 4*S.w*S.h];
-
+    // solve the vx and vy by the matrix M and T over the image v
+    for(j = (stride-1)/2; j < S.h; j += stride){ // start row with the half the stride and the counter step it the stride
+        for(i = (stride-1)/2; i < S.w; i += stride){ // start column with the half the stride and the counter step it the stride
+            float Ixx = get_pixel(S,i,j,0);
+            float Iyy = get_pixel(S,i,j,1);
+            float Ixy = get_pixel(S,i,j,2);
+            float Ixt = get_pixel(S,i,j,3);
+            float Iyt = get_pixel(S,i,j,4);
             // TODO: calculate vx and vy using the flow equation
             float vx = 0;
             float vy = 0;
 
+            // fill the mtrix M , T by its values
             M.data[0][0] = Ixx;
             M.data[0][1] = Ixy;
             M.data[1][0] = Ixy;
@@ -193,16 +209,22 @@ image velocity_image(image S, int stride)
             T.data[0][0] = -Ixt;
             T.data[1][0] = -Iyt;
 
+            // inverse the Matrix M
             invert = matrix_invert(M);
 
+            // check if it's invertable first
             if(invert.data)
             {
+                // multuply the mtrix to get velocity matrix
                 mul = matrix_mult_matrix(invert,T);
 
+                // extract the values from the velocity matrix
                 vx = mul.data[0][0];
                 vy = mul.data[1][0];
             }
 
+            // fill the first required pixels in the image v
+            // if stride = 8 , start = 2,10,18,...etc, index = 2/8,10/8,18/8 = 0,1,2
             set_pixel(v, i/stride, j/stride, 0, vx);
             set_pixel(v, i/stride, j/stride, 1, vy);
         }
@@ -220,10 +242,11 @@ image velocity_image(image S, int stride)
 // float scale: scalar to multiply velocity by for drawing
 void draw_flow(image im, image v, float scale)
 {
+    // to get the stride(step) --> v.w = im.w/stride , stride = im.w/v.w
     int stride = im.w / v.w;
     int i,j;
-    for (j = (stride-1)/2; j < im.h; j += stride) {
-        for (i = (stride-1)/2; i < im.w; i += stride) {
+    for (j = (stride-1)/2; j < im.h; j += stride) { // start row with the half the stride and the counter step it the stride
+        for (i = (stride-1)/2; i < im.w; i += stride) { // start column with the half the stride and the counter step it the stride
             float dx = scale*get_pixel(v, i/stride, j/stride, 0);
             float dy = scale*get_pixel(v, i/stride, j/stride, 1);
             if(fabs(dx) > im.w) dx = 0;
@@ -240,6 +263,7 @@ void draw_flow(image im, image v, float scale)
 void constrain_image(image im, float v)
 {
     int i;
+    // make the range of pixels value for [-v,v]
     for(i = 0; i < im.w*im.h*im.c; ++i){
         if (im.data[i] < -v) im.data[i] = -v;
         if (im.data[i] >  v) im.data[i] =  v;
@@ -256,7 +280,9 @@ image optical_flow_images(image im, image prev, int smooth, int stride)
 {
     image S = time_structure_matrix(im, prev, smooth);   
     image v = velocity_image(S, stride);
+    // set the range of the image v
     constrain_image(v, 6);
+    // smooth the velocity matrix to remove the high frequency of v
     image vs = smooth_image(v, 2);
     free_image(v);
     free_image(S);

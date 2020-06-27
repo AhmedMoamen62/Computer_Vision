@@ -203,4 +203,3 @@ def panorama_image(a, b, sigma=2, thresh=5, nms=3, inlier_thresh=2, iters=10000,
 if __name__ == "__main__":
     im = load_image("data/dog.jpg")
     save_image(im, "hey")
-
