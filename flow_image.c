@@ -13,28 +13,41 @@
 void draw_line(image im, float x, float y, float dx, float dy)
 {
     assert(im.c == 3);
+    // get the angle in radian in range of -pi --> pi
+    // normalize by dividing by 2*pi ro get range of -0.5 --> 0.5
+    // then shift the range to be of 0 --> 1
+    // then scale the range to be of 0 --> 6
     float angle = 6*(atan2(dy, dx) / TWOPI + .5);
+    // get the integer value of the angle
     int index = floor(angle);
+    // get the float difference value (f <= 1 && f >= 0)
     float f = angle - index;
     float r, g, b;
-    if(index == 0){
+    // set different color with respect to the angle and the difference f
+    if(index == 0){ // theta between 0 and 60 degree
         r = 1; g = f; b = 0;
-    } else if(index == 1){
+    } else if(index == 1){ // theta between 60 and 120 degree
         r = 1-f; g = 1; b = 0;
-    } else if(index == 2){
+    } else if(index == 2){ // theta between 120 and 180 degree
         r = 0; g = 1; b = f;
-    } else if(index == 3){
+    } else if(index == 3){ // theta between 180 and 240 degree
         r = 0; g = 1-f; b = 1;
-    } else if(index == 4){
+    } else if(index == 4){ // theta between 240 and 300 degree
         r = f; g = 0; b = 1;
-    } else {
+    } else { // theta between 300 and 360 degree
         r = 1; g = 0; b = 1-f;
     }
     float i;
+    // get the distance to dx and dy point from zero reference
     float d = sqrt(dx*dx + dy*dy);
-    for(i = 0; i < d; i += 1){
+    // iterate from zero reference untill the end of the distance d to draw the curve
+    for(i = 0; i < d; i++){
+        // get a ratio of the current iteration to the total distance
+        // then multiply it with delta variation in x , y to get the abslute variation in the image coordinates
+        // then add the orginial x , y value to draw the new point
         int xi = x + dx*i/d;
         int yi = y + dy*i/d;
+        // color the point with the calculated rgb colors wrt the angle
         set_pixel(im, xi, yi, 0, r);
         set_pixel(im, xi, yi, 1, g);
         set_pixel(im, xi, yi, 2, b);
@@ -247,11 +260,12 @@ void draw_flow(image im, image v, float scale)
     int i,j;
     for (j = (stride-1)/2; j < im.h; j += stride) { // start row with the half the stride and the counter step it the stride
         for (i = (stride-1)/2; i < im.w; i += stride) { // start column with the half the stride and the counter step it the stride
-            float dx = scale*get_pixel(v, i/stride, j/stride, 0);
-            float dy = scale*get_pixel(v, i/stride, j/stride, 1);
-            if(fabs(dx) > im.w) dx = 0;
-            if(fabs(dy) > im.h) dy = 0;
-            draw_line(im, i, j, dx, dy);
+            // at high scalar --> the line will get very large so it's prefered to be equal to the stride (step)
+            float dx = scale*get_pixel(v, i/stride, j/stride, 0); // get the delta of x by multiply the velocity with constant scalar (time slice , dx = t*vx)
+            float dy = scale*get_pixel(v, i/stride, j/stride, 1); // get the delta of y by multiply the velocity with constant scalar (time slice , dy = t*vy)
+            if(fabs(dx) > im.w) dx = 0; // check if the dx is greater than image width , set it to zer0 --> unchanged
+            if(fabs(dy) > im.h) dy = 0; // check if the dy is greater than image width , set it to zer0 --> unchanged
+            draw_line(im, i, j, dx, dy); // draw the flow change with respect to the dx and dy
         }
     }
 }
@@ -293,31 +307,50 @@ image optical_flow_images(image im, image prev, int smooth, int stride)
 // int smooth: amount to smooth structure matrix by
 // int stride: downsampling for velocity matrix
 // int div: downsampling factor for images from webcam
-void optical_flow_webcam(int smooth, int stride, int div)
+void optical_flow_webcam(int smooth, int stride, int div,int camera_index)
 {
+    // smooth to is the sigma for gaussian filter
+    // stride is the step of dawnsampling the image
+    // div a scalar to the image to resize it
+    // camera_index to select a camera from the device
 #ifdef OPENCV
     CvCapture * cap;
-    cap = cvCaptureFromCAM(0);
+    // get the indexed camera connected to the device
+    cap = cvCaptureFromCAM(camera_index);
+    // capture image from live streaming
     image prev = get_image_from_stream(cap);
+    // resize this image to get high response
     image prev_c = nn_resize(prev, prev.w/div, prev.h/div);
+    // capture another image from live streaming
     image im = get_image_from_stream(cap);
+    // resize this image to be equal to the previous image
     image im_c = nn_resize(im, im.w/div, im.h/div);
+    // while one loop to capture images in sequence
     while(im.data){
+        // copy the new original image to edit it
         image copy = copy_image(im);
+        // run sparse optical flow algorithm on the resized image
         image v = optical_flow_images(im_c, prev_c, smooth, stride);
+        // draw the flow changes on the original image
         draw_flow(copy, v, smooth*div);
+        // show the drawing on the copied image and get key value from keyboard if entered any key
         int key = show_image(copy, "flow", 5);
+        // free all the used image from memory
         free_image(v);
         free_image(copy);
         free_image(prev);
         free_image(prev_c);
+        // make the current original image equal the previous original image
         prev = im;
+        // make the current resized image equal the previous resized image
         prev_c = im_c;
+        // check if the key value equal esc --> break the loop
         if(key != -1) {
             key = key % 256;
             printf("%d\n", key);
             if (key == 27) break;
         }
+        // capture a new image and resize it
         im = get_image_from_stream(cap);
         im_c = nn_resize(im, im.w/div, im.h/div);
     }

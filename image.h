@@ -124,7 +124,7 @@ image panorama_image(image a, image b, float sigma, float thresh, int nms, float
 
 // Optical Flow
 image optical_flow_images(image im, image prev, int smooth, int stride);
-void optical_flow_webcam(int smooth, int stride, int div);
+void optical_flow_webcam(int smooth, int stride, int div,int camera_index);
 void draw_flow(image im, image v, float scale);
 
 #ifndef __cplusplus

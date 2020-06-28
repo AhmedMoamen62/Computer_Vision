@@ -15,6 +15,8 @@ int main()
     draw_flow(a, flow, 8);
     save_image(a, "lines");
 
+    optical_flow_webcam(15,4,8,0);
+
     //    image img = load_image("data/dog.jpg");
     //    image box = box_filter_image(img,7);
     //    save_image(box,"test_hw");
