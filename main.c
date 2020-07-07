@@ -9,13 +9,13 @@ int main()
 {
     //run_tests();
 
-    image a = load_image("data/dog_a.jpg");
-    image b = load_image("data/dog_b.jpg");
-    image flow = optical_flow_images(b, a, 15, 8);
-    draw_flow(a, flow, 8);
-    save_image(a, "lines");
+//    image a = load_image("data/dog_a.jpg");
+//    image b = load_image("data/dog_b.jpg");
+//    image flow = optical_flow_images(b, a, 15, 8);
+//    draw_flow(a, flow, 8);
+//    save_image(a, "lines");
 
-    optical_flow_webcam(15,4,8,0);
+//    optical_flow_webcam(15,4,8,0);
 
     //    image img = load_image("data/dog.jpg");
     //    image box = box_filter_image(img,7);

@@ -1,9 +1,7 @@
-[X1,map1]=imread('figs/theta.png');
-[X2,map2]=imread('qt_hw/editable_dog.jpg');
+X1 = imread('figs/theta.png');
 ##[X3,map3]=imread('qt_hw/editable_dog.jpg');
 ##[X4,map4]=imread('data/dog.jpg');
-subplot(1,2,1), imshow(X1,map1)
-subplot(1,2,2), imshow(X2,map2)
+imshow(X1)
 ##subplot(2,2,3), imshow(X3,map3)
 ##subplot(2,2,4), imshow(X4,map4)
 function btn_down (obj, evt)
